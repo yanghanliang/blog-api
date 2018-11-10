@@ -23,5 +23,10 @@ router.post('/login', function(req, res) {
     process.login(req, res, req.body) // 调用自定义登录的方法
 })
 
+router.get('/index', function(req, res) {
+    process.article(req, res) // 调用获取文章的数据
+    // console.log('ggg')
+})
+
 // 将 router 暴露出去
 module.exports = router
