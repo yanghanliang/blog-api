@@ -4,9 +4,47 @@ const connect = require('./database.js')
 // 导入签发与验证 JWT 的功能包
 const jwt = require('jsonwebtoken')
 
+const async = require('async')
+
 // 访问首页
 module.exports.getIndex = function(req, res) {
+    // 获取文章的数据
+    const article =  function(callback) {
+        const sql = "SELECT * FROM article"
+        connect.query(sql, function(error, results, fields) {
+            if(error) throw error
     
+            if(results.length >= 1) { // 判断是否有数据
+                callback(null, results)
+            } else {
+                callback(null, { msg: '没有数据' })
+            }
+        })
+    }
+
+    // 获取个人信息
+    const personal_information = function(callback) {
+        const sql = "SELECT * FROM user"
+        connect.query(sql, function(error, results, fields) {
+            if(error) throw error
+    
+            if(results.length >= 1) { // 判断是否有数据
+                callback(null, results[0])
+            } else {
+                callback(null, { msg: '没有数据' })
+            }
+        })
+    }
+    
+    // 并行执行,但保证了 results 的结果是正确的
+    async.parallel({article, personal_information}, function(error, results) {
+        if(error) {
+            console.log(error)
+        }
+
+        // 返回数据
+        res.send(results)
+    })
 }
 
 // 登录验证
@@ -41,21 +79,6 @@ module.exports.login = function(req, res, data) {
             res.json({
                 status: 401,
                 msg: '用户名或密码不正确!'
-            })
-        }
-    })
-}
-
-module.exports.article = function(req, res) {
-    const sql = "SELECT * FROM article"
-    connect.query(sql, function(error, results, fields) {
-        if(error) throw error
-
-        if(results.length >= 1) { // 判断是否有数据
-            res.send(results) // 返回数据
-        } else {
-            res.json({ // 返回提示
-                msg: '没有数据gg'
             })
         }
     })

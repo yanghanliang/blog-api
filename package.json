@@ -1,8 +1,16 @@
 {
   "dependencies": {
+    "async": "^2.6.1",
+    "buffer-equal-constant-time": "^1.0.1",
+    "core-util-is": "^1.0.2",
+    "ecdsa-sig-formatter": "^1.0.10",
     "express": "^4.16.4",
+    "isarray": "^2.0.4",
     "jsonwebtoken": "^8.3.0",
+    "jwa": "^1.1.6",
     "koa-jwt": "^3.5.1",
-    "mysql": "^2.16.0"
+    "mysql": "^2.16.0",
+    "process-nextick-args": "^2.0.0",
+    "util-deprecate": "^1.0.2"
   }
 }
