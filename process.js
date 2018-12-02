@@ -83,3 +83,22 @@ module.exports.login = function(req, res, data) {
         }
     })
 }
+
+// 文章详情
+module.exports.articleDetails = function(req, res) {
+    const sql = 'SELECT * FROM article WHERE id='+ req.params.articleId
+    connect.query(sql, function(error, results, fields) {
+        if(error) throw error
+
+        if(results.length >= 1) {
+            // 返回数据
+            res.send(results)
+        } else {
+            // 返回数据
+            res.json({
+                status: 401,
+                msg: '该文章没有评论'
+            })
+        }
+    })
+}
