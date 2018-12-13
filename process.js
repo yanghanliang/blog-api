@@ -102,3 +102,24 @@ module.exports.articleDetails = function(req, res) {
         }
     })
 }
+
+// 添加文章
+module.exports.addArticle = function(req, res, data) {
+    const createtime = new Date().getTime() // 获取当前时间戳（精确到毫米
+    const type = data.type, // 类型
+          title = data.title, // 标题
+          synopsis = data.synopsis, // 简介
+          content = data.content // 内容
+    const sql = `INSERT INTO article(type, title, synopsis, createtime, content) values ('${type}', '${title}', '${synopsis}', '${createtime}', '${content}')`
+    connect.query(sql, function(error, results, fields) {
+        if(error) {
+            throw error
+        } else {
+            // 返回数据
+            res.json({
+                status: 200,
+                msg: '文章添加成功!'
+            })
+        }
+    })
+}
