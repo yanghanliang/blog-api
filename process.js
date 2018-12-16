@@ -4,10 +4,11 @@ const connect = require('./database.js')
 // 导入签发与验证 JWT 的功能包
 const jwt = require('jsonwebtoken')
 
+// 解决异步操作
 const async = require('async')
 
 // 访问首页
-module.exports.getIndex = function(req, res) {
+module.exports.getIndex = (req, res) => {
     // 获取文章的数据
     const article =  function(callback) {
         const sql = "SELECT * FROM article"
@@ -48,7 +49,7 @@ module.exports.getIndex = function(req, res) {
 }
 
 // 登录验证
-module.exports.login = function(req, res, data) {
+module.exports.login = (req, res, data) => {
     const sql = "SELECT * FROM user WHERE username='"+ data.username +"' and password='" + data.password +"'"
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
@@ -84,8 +85,19 @@ module.exports.login = function(req, res, data) {
     })
 }
 
+// 获取文章列表
+module.exports.articleList = (req, res) => {
+    const sql = 'SELECT * FROM article'
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+
+        // 返回数据
+        res.send(results)
+    })
+}
+
 // 文章详情
-module.exports.articleDetails = function(req, res) {
+module.exports.articleDetails = (req, res) => {
     const sql = 'SELECT * FROM article WHERE id='+ req.params.articleId
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
@@ -104,12 +116,13 @@ module.exports.articleDetails = function(req, res) {
 }
 
 // 添加文章
-module.exports.addArticle = function(req, res, data) {
+module.exports.addArticle = (req, res, data) => {
     const createtime = new Date().getTime() // 获取当前时间戳（精确到毫米
     const type = data.type, // 类型
           title = data.title, // 标题
           synopsis = data.synopsis, // 简介
           content = data.content // 内容
+
     const sql = `INSERT INTO article(type, title, synopsis, createtime, content) values ('${type}', '${title}', '${synopsis}', '${createtime}', '${content}')`
     connect.query(sql, function(error, results, fields) {
         if(error) {
@@ -119,6 +132,28 @@ module.exports.addArticle = function(req, res, data) {
             res.json({
                 status: 200,
                 msg: '文章添加成功!'
+            })
+        }
+    })
+}
+
+// 修改文章
+module.exports.editArticle = (req, res, data) => {
+    const updatetime = new Date().getTime() // 获取当前时间戳（精确到毫米
+    const type = data.type, // 类型
+          title = data.title, // 标题
+          synopsis = data.synopsis, // 简介
+          content = data.content, // 内容
+          id = req.params.articleId // id
+    const sql = `UPDATE article SET type='${type}', title='${title}', synopsis='${synopsis}', content='${content}', updatetime=${updatetime} WHERE id=${id}`
+    connect.query(sql, function(error, results, fields) {
+        if(error) {
+            throw error
+        } else {
+            // 返回数据
+            res.json({
+                status: 200,
+                msg: '文章修改成功!'
             })
         }
     })

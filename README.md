@@ -41,14 +41,18 @@ create table if not exists article(
 	`type` varchar(30) NOT NULL COMMENT '分类',
 	`title` varchar(30) NOT NULL COMMENT '文章标题',
 	`synopsis` text NOT NULL COMMENT '文章简介',
-	`createtime` datetime NOT NULL COMMENT '创建时间',
-	`updatetime` datetime COMMENT '更新时间',
+	`createtime` bigint(13) NOT NULL COMMENT '创建时间',
+	`updatetime` bigint(13) COMMENT '更新时间',
   	`read` int(11) NOT NULL DEFAULT '0' COMMENT '阅读数',
   	`praise` int(11) NOT NULL DEFAULT '0' COMMENT '点赞',
 	`original` int(1) NOT NULL DEFAULT '0' COMMENT '原创0,转载1',
 	`content` text NOT NULL COMMENT '文章内容'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
+
++ 注意： 时间不能使用 varchar 这种格式， 否则 moment 会提示 Invalid date (无效时间)
++ 注意： 想精确保留毫秒 需要设置 bigint(13) ，设置 int(13) 不行， 
+
 ### 文章内容详解
 
 + title 
@@ -65,3 +69,14 @@ create table if not exists comment(
 	`alias` varchar(25) NOT NULL DEFAULT 'xx' COMMENT '别名'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
+
+##
+
+// 解决异步操作（以前忘记写了
+const async = require('async')
+
+## 转义
+
+双引号：&quot;  
+单引号：&apos;
+

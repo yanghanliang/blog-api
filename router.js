@@ -17,23 +17,33 @@ var router = express.Router()
 //     // res.send('hello world')
 // })
 
-router.get('/aa', function (req, res) {
+router.get('/aa', (req, res) => {
     res.send('aa页面')
 })
 
 // 调用自定义登录的方法
-router.post('/login', function (req, res) {
+router.post('/login', (req, res) => {
     process.login(req, res, req.body) 
 })
 
 // 获取首页需要的数据
-router.get('/index', function (req, res) {
+router.get('/index', (req, res) => {
     process.getIndex(req, res) 
 })
 
 // 添加文章
 router.post('/addArticle', (req, res) => {
     process.addArticle(req, res, req.body)
+})
+
+// 获取文章列表
+router.get('/articleList', (req, res) => {
+    process.articleList(req, res)
+})
+
+// 修改文章
+router.put('/editArticle/:articleId', (req, res) => {
+    process.editArticle(req, res, req.body)
 })
 
 // 获取文章详情数据
