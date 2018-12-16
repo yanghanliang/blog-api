@@ -121,7 +121,7 @@ module.exports.addArticle = (req, res, data) => {
     const type = data.type, // 类型
           title = data.title, // 标题
           synopsis = data.synopsis, // 简介
-          content = data.content // 内容
+          content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
 
     const sql = `INSERT INTO article(type, title, synopsis, createtime, content) values ('${type}', '${title}', '${synopsis}', '${createtime}', '${content}')`
     connect.query(sql, function(error, results, fields) {
