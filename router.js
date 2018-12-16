@@ -17,10 +17,6 @@ var router = express.Router()
 //     // res.send('hello world')
 // })
 
-router.get('/aa', (req, res) => {
-    res.send('aa页面')
-})
-
 // 调用自定义登录的方法
 router.post('/login', (req, res) => {
     process.login(req, res, req.body) 
@@ -44,6 +40,11 @@ router.get('/articleList', (req, res) => {
 // 修改文章
 router.put('/editArticle/:articleId', (req, res) => {
     process.editArticle(req, res, req.body)
+})
+
+// 删除文章
+router.delete('/deleteArticle/:articleId', (req, res) => {
+    process.deleteArticle(req, res)
 })
 
 // 获取文章详情数据

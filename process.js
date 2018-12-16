@@ -158,3 +158,20 @@ module.exports.editArticle = (req, res, data) => {
         }
     })
 }
+
+// 删除文章
+module.exports.deleteArticle = (req, res) => {
+    id = req.params.articleId // id
+    const sql = `DELETE FROM article WHERE id=${id}`
+    connect.query(sql, function(error, results, fields) {
+        if (error) {
+            throw error
+        } else {
+            // 返回数据
+            res.json({
+                status: 200,
+                msg: '文章删除成功!'
+            })
+        }
+    })
+}
