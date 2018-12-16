@@ -178,7 +178,7 @@ module.exports.deleteArticle = (req, res) => {
 
 // 搜索数据
 module.exports.searchData = (req, res, data) => {
-    const sql = `SELECT * FROM article WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%'`
+    const sql = `SELECT * FROM article WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or type Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'`
     connect.query(sql, function(error, results, fields) {
         if (error) throw error
 
