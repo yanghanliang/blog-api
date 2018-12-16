@@ -175,3 +175,22 @@ module.exports.deleteArticle = (req, res) => {
         }
     })
 }
+
+// 搜索数据
+module.exports.searchData = (req, res, data) => {
+    const sql = `SELECT * FROM article WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%'`
+    connect.query(sql, function(error, results, fields) {
+        if (error) throw error
+
+        if (results.length > 0) {
+            res.send({
+                status: 200,
+                data: results
+            })
+        } else {
+            res.send({
+                msg: '没有找到数据, 主人啥都没写,懒死他了~'
+            })
+        }
+    })
+}

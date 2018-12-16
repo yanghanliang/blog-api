@@ -52,5 +52,10 @@ router.get('/articleDetakils/:articleId', (req, res) => {
     process.articleDetails(req, res)
 })
 
+// 搜索内容
+router.post('/searchData', (req, res) => {
+    process.searchData(req, res, req.body)
+})
+
 // 将 router 暴露出去
 module.exports = router

@@ -77,6 +77,13 @@ const async = require('async')
 
 ## 转义
 
-双引号：&quot;  
-单引号：&apos;
+双引号：```&quot;```
+单引号：```&apos;```
 
+## 模糊搜索
+
+```sql
+
+SELECT * FROM article WHERE title Like '%qw%' or content Like '%qw%'
+
+```
