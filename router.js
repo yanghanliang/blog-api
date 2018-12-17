@@ -57,5 +57,10 @@ router.post('/searchData', (req, res) => {
     process.searchData(req, res, req.body)
 })
 
+// 文章分页
+router.get('/paging/:currentPage/:number', (req, res) => {
+    process.paging(req, res)
+})
+
 // 将 router 暴露出去
 module.exports = router

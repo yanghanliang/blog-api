@@ -74,6 +74,7 @@ create table if not exists comment(
 
 // 解决异步操作（以前忘记写了
 const async = require('async')
+https://blog.csdn.net/zzwwjjdj1/article/details/51857959
 
 ## 转义
 

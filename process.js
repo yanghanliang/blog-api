@@ -85,12 +85,33 @@ module.exports.login = (req, res, data) => {
     })
 }
 
+// 获取文章表的总条数
+const getArticleNumber = function(callback) {
+    const sql = 'SELECT COUNT(*) FROM article'
+    connect.query(sql, (error, results, fields) => {
+        callback(null, results[0]['COUNT(*)'])
+    })
+}
+
 // 获取文章列表
 module.exports.articleList = (req, res) => {
-    const sql = 'SELECT * FROM article'
-    connect.query(sql, (error, results, fields) => {
-        if (error) throw error
+    // 获取文章列表数据
+    const data = function(callback) {
+        const sql = 'SELECT * FROM article LIMIT 0,6' // 默认返回 6 条数据
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
 
+            if(results.length >= 1) { // 判断是否有数据
+                callback(null, results)
+            } else {
+                callback(null, { msg: '没有数据' })
+            }
+        })
+    }
+
+    // 并行执行,但保证了 results 的结果是正确的
+    async.parallel({data, getArticleNumber}, function(error, results) {
+        if (error) throw error
         // 返回数据
         res.send(results)
     })
@@ -161,18 +182,27 @@ module.exports.editArticle = (req, res, data) => {
 
 // 删除文章
 module.exports.deleteArticle = (req, res) => {
-    id = req.params.articleId // id
-    const sql = `DELETE FROM article WHERE id=${id}`
-    connect.query(sql, function(error, results, fields) {
-        if (error) {
-            throw error
-        } else {
-            // 返回数据
-            res.json({
-                status: 200,
-                msg: '文章删除成功!'
-            })
-        }
+    const deleteData = function(callback) { // 删除数据
+        id = req.params.articleId // id
+        const sql = `DELETE FROM article WHERE id=${id}`
+        connect.query(sql, function(error, results, fields) {
+            if (error) {
+                throw error
+            } else {
+                // 返回数据
+                callback(null, { 
+                    status: 200,
+                    msg: '文章删除成功!'
+                 })
+            }
+        })
+    }
+
+    // 并行执行,但保证了 results 的结果是正确的
+    async.parallel({deleteData, getArticleNumber}, function(error, results) {
+        if (error) throw error
+        // 返回数据
+        res.send(results)
     })
 }
 
@@ -190,6 +220,25 @@ module.exports.searchData = (req, res, data) => {
         } else {
             res.send({
                 msg: '没有找到数据, 主人啥都没写,懒死他了~'
+            })
+        }
+    })
+}
+
+module.exports.paging = (req, res) => {
+    const currentPage = req.params.currentPage, // 获取当前页
+          number = req.params.number // 获取条数
+    const sql = `SELECT * FROM article LIMIT ${currentPage},${number}`
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        if (results.length > 0) {
+            res.send({
+                status: 200,
+                data: results
+            })
+        } else {
+            res.send({
+                msg: '大佬别点了, 真没了!'
             })
         }
     })
