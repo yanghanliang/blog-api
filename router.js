@@ -62,5 +62,10 @@ router.get('/paging/:currentPage/:number', (req, res) => {
     process.paging(req, res)
 })
 
+// 获取分类数据
+router.get('/category', (req, res) => {
+    process.category(req, res)
+})
+
 // 将 router 暴露出去
 module.exports = router

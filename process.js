@@ -7,6 +7,9 @@ const jwt = require('jsonwebtoken')
 // 解决异步操作
 const async = require('async')
 
+// 格式化时间
+const moment = require('moment')
+
 // 访问首页
 module.exports.getIndex = (req, res) => {
     // 获取文章的数据
@@ -105,6 +108,10 @@ module.exports.articleList = (req, res) => {
             if (error) throw error
 
             if(results.length >= 1) { // 判断是否有数据
+                for (let i = 0; i < results.length; i++) { // 格式化时间
+                    results[i].createtime = results[i].createtime === null ? null : moment(results[i].createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+                    results[i].updatetime = results[i].updatetime === null ? null : moment(results[i].updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+                }
                 callback(null, results)
             } else {
                 callback(null, { msg: '没有数据' })
@@ -142,12 +149,12 @@ module.exports.articleDetails = (req, res) => {
 // 添加文章
 module.exports.addArticle = (req, res, data) => {
     const createtime = new Date().getTime() // 获取当前时间戳（精确到毫米
-    const type = data.type, // 类型
+    const classNameId = data.classname, // 类型
           title = data.title, // 标题
           synopsis = data.synopsis, // 简介
           content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
 
-    const sql = `INSERT INTO article(type, title, synopsis, createtime, content) values ('${type}', '${title}', '${synopsis}', '${createtime}', '${content}')`
+    const sql = `INSERT INTO article(category_id, title, synopsis, createtime, content) values ('${classNameId}', '${title}', '${synopsis}', '${createtime}', '${content}')`
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error
@@ -232,10 +239,16 @@ module.exports.searchData = (req, res, data) => {
 module.exports.paging = (req, res) => {
     const currentPage = req.params.currentPage, // 获取当前页
           number = req.params.number // 获取条数
-    const sql = `SELECT * FROM article LIMIT ${currentPage},${number}`
+    const sql = `SELECT a.*,c.classname FROM
+    article AS a LEFT OUTER JOIN category AS c
+    ON a.category_id = c.id LIMIT ${currentPage},${number}`
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         if (results.length > 0) {
+            for (let i = 0; i < results.length; i++) { // 格式化时间
+                results[i].createtime = results[i].createtime === null ? null : moment(results[i].createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+                results[i].updatetime = results[i].updatetime === null ? null : moment(results[i].updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+            }
             res.send({
                 status: 200,
                 data: results
@@ -245,5 +258,21 @@ module.exports.paging = (req, res) => {
                 msg: '大佬别点了, 真没了!'
             })
         }
+    })
+}
+
+// 获取分类数据
+module.exports.category = (req, res) => {
+    const sql = 'SELECT classname,id FROM category'
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        let data = [] // 存储数据
+        for (let i = 0; i < results.length; i++) {
+            data.push({
+                id: results[i].id,
+                classname: results[i].classname
+            })
+        }
+        res.send(data)
     })
 }
