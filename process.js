@@ -97,7 +97,10 @@ const getArticleNumber = function(callback) {
 module.exports.articleList = (req, res) => {
     // 获取文章列表数据
     const data = function(callback) {
-        const sql = 'SELECT * FROM article LIMIT 0,6' // 默认返回 6 条数据
+        const sql = `SELECT a.*,c.classname FROM
+        article AS a LEFT OUTER JOIN category AS c
+        ON a.category_id = c.id
+        LIMIT 0,6` // 默认返回 6 条数据
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
 
@@ -225,6 +228,7 @@ module.exports.searchData = (req, res, data) => {
     })
 }
 
+// 文章分页
 module.exports.paging = (req, res) => {
     const currentPage = req.params.currentPage, // 获取当前页
           number = req.params.number // 获取条数

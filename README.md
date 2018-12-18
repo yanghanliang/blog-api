@@ -38,7 +38,7 @@ INSERT INTO `user` (`username`, `password`, `name`, `tel`, `background_wall`, `h
 create table if not exists article(
 	`id` int NOT NULL auto_increment primary key,
 	`comment_id` int COMMENT '评论的id',
-	`type` varchar(30) NOT NULL COMMENT '分类',
+	`category_id` smallint(6) COMMENT '分类id',
 	`title` varchar(30) NOT NULL COMMENT '文章标题',
 	`synopsis` text NOT NULL COMMENT '文章简介',
 	`createtime` bigint(13) NOT NULL COMMENT '创建时间',
@@ -88,3 +88,24 @@ https://blog.csdn.net/zzwwjjdj1/article/details/51857959
 SELECT * FROM article WHERE title Like '%qw%' or content Like '%qw%'
 
 ```
+
+
+## 分类表
+
+```sql
+create table if not exists category(
+	`id` smallint(6) NOT NULL auto_increment primary key,
+	`classname` varchar(30) NOT NULL COMMENT '分类名称',
+	`pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id'
+)ENGINE=INNODB DEFAULT CHARSET=utf8;
+```
+
+## articleList-api
+mysql 连表查询,取一个表的所有数据和取另一个表的某个字段
+
+```sql
+select a.*,c.classname from
+article as a left outer join category as c
+on a.category_id = c.id;
+```
+
