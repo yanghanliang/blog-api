@@ -129,7 +129,11 @@ module.exports.articleList = (req, res) => {
 
 // 文章详情
 module.exports.articleDetails = (req, res) => {
-    const sql = 'SELECT * FROM article WHERE id='+ req.params.articleId
+    // const sql = 'SELECT * FROM article WHERE id='+ req.params.articleId
+    const sql = `SELECT a.*,c.classname FROM
+    article AS a LEFT OUTER JOIN category AS c
+    ON a.category_id = c.id
+    WHERE a.id= ${req.params.articleId}`
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
 
@@ -171,12 +175,12 @@ module.exports.addArticle = (req, res, data) => {
 // 修改文章
 module.exports.editArticle = (req, res, data) => {
     const updatetime = new Date().getTime() // 获取当前时间戳（精确到毫米
-    const type = data.type, // 类型
+    const category_id = data.classname, // 类型
           title = data.title, // 标题
           synopsis = data.synopsis, // 简介
           content = data.content, // 内容
           id = req.params.articleId // id
-    const sql = `UPDATE article SET type='${type}', title='${title}', synopsis='${synopsis}', content='${content}', updatetime=${updatetime} WHERE id=${id}`
+    const sql = `UPDATE article SET category_id=${category_id}, title='${title}', synopsis='${synopsis}', content='${content}', updatetime=${updatetime} WHERE id=${id}`
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error
