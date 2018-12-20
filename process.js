@@ -14,7 +14,7 @@ const moment = require('moment')
 module.exports.getIndex = (req, res) => {
     // 获取文章的数据
     const article =  function(callback) {
-        const sql = "SELECT * FROM article"
+        const sql = "SELECT * FROM article ORDER BY updatetime desc"
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
     
@@ -27,8 +27,8 @@ module.exports.getIndex = (req, res) => {
     }
 
     // 获取个人信息
-    const personal_information = function(callback) {
-        const sql = "SELECT * FROM user"
+    const personalInformation = function(callback) {
+        const sql = 'SELECT * FROM user'
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
     
@@ -41,10 +41,8 @@ module.exports.getIndex = (req, res) => {
     }
     
     // 并行执行,但保证了 results 的结果是正确的
-    async.parallel({article, personal_information}, function(error, results) {
-        if(error) {
-            console.log(error)
-        }
+    async.parallel({article, personalInformation}, function(error, results) {
+        if(error) throw error
 
         // 返回数据
         res.send(results)
@@ -203,12 +201,12 @@ module.exports.addArticle = (req, res, data) => {
 // 修改文章
 module.exports.editArticle = (req, res, data) => {
     const updatetime = new Date().getTime() // 获取当前时间戳（精确到毫米
-    const category_id = data.classname, // 类型
+    const categoryId = data.classname, // 类型
           title = data.title, // 标题
           synopsis = data.synopsis, // 简介
           content = data.content, // 内容
           id = req.params.articleId // id
-    const sql = `UPDATE article SET category_id=${category_id}, title='${title}', synopsis='${synopsis}', content='${content}', updatetime=${updatetime} WHERE id=${id}`
+    const sql = `UPDATE article SET category_id=${categoryId}, title='${title}', synopsis='${synopsis}', content='${content}', updatetime=${updatetime} WHERE id=${id}`
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error
@@ -301,14 +299,7 @@ module.exports.category = (req, res) => {
     const sql = 'SELECT classname,id FROM category'
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
-        let data = [] // 存储数据
-        for (let i = 0; i < results.length; i++) {
-            data.push({
-                id: results[i].id,
-                classname: results[i].classname
-            })
-        }
-        res.send(data)
+        res.send(results)
     })
 }
 

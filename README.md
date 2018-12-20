@@ -119,3 +119,27 @@ article as a left outer join category as c
 on a.category_id = c.id;
 ```
 
+
+if(error) {
+	console.log(error)
+}
+
+简写 --->
+
+if (error) throw error
+
+
+
+
+
+
+
+
+---
+
+> 接口文档
+
+# index
+
+> 获取首页需要的数据
+
