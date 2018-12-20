@@ -89,6 +89,16 @@ SELECT * FROM article WHERE title Like '%qw%' or content Like '%qw%'
 
 ```
 
+## searchData-api
+```sql
+`SELECT a.*,c.classname FROM
+    article AS a LEFT OUTER JOIN category AS c
+    ON a.category_id = c.id
+    WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'`
+```
+
+按标题||内容||类名||描述 -> 搜索
+
 
 ## 分类表
 

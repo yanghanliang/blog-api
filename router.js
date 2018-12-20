@@ -33,7 +33,7 @@ router.post('/addArticle', (req, res) => {
 })
 
 // 获取文章列表
-router.get('/articleList', (req, res) => {
+router.get('/articleList/:sortField/:orderBy/:number', (req, res) => {
     process.articleList(req, res)
 })
 
@@ -65,6 +65,11 @@ router.get('/paging/:currentPage/:number', (req, res) => {
 // 获取分类数据
 router.get('/category', (req, res) => {
     process.category(req, res)
+})
+
+// 文章排序数据
+router.get('/getOrderData/:sortField/:orderBy/:number', (req, res) => {
+    process.getOrderData(req, res)
 })
 
 // 将 router 暴露出去

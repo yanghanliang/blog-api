@@ -96,23 +96,52 @@ const getArticleNumber = function(callback) {
     })
 }
 
+// 字符串拼接
+/**
+ * 
+ * @param {string} str 字符串
+ * @param {number} interceptLength 截取的长度
+ */
+const stitchingString = (str, interceptLength) => { // 字符串拼接
+    if (str.length > interceptLength) {
+        return str.substr(0, interceptLength) + '...'
+    }
+    return str
+}
+
 // 获取文章列表
 module.exports.articleList = (req, res) => {
+    const sortField = req.params.sortField // 排序的字段
+    const orderBy = req.params.orderBy === 'descending' ? 'desc' : 'asc' // 修改排序方式 传入的排序方式(ascending || descending)
+    const number = req.params.number // 获取条数
     // 获取文章列表数据
     const data = function(callback) {
         const sql = `SELECT a.*,c.classname FROM
         article AS a LEFT OUTER JOIN category AS c
         ON a.category_id = c.id
-        LIMIT 0,6` // 默认返回 6 条数据
+        ORDER BY ${sortField} ${orderBy}
+        LIMIT 0,${number}` // 默认返回 6 条数据
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
 
             if(results.length >= 1) { // 判断是否有数据
-                for (let i = 0; i < results.length; i++) { // 格式化时间
-                    results[i].createtime = results[i].createtime === null ? null : moment(results[i].createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
-                    results[i].updatetime = results[i].updatetime === null ? null : moment(results[i].updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+                let tableData = [] // 保存表格数据
+                for (let i = 0; i < results.length; i++) {
+                    let rowData = results[i] // 获取一行的数据
+                    // 将一行数据转化为对象,并追加到表格数据中
+                    tableData.push({
+                        title: stitchingString(rowData.title, 26),
+                        classname: rowData.classname,
+                        synopsis: rowData.synopsis,
+                        createtime: rowData.createtime == null ? '暂未更新' : moment(rowData.createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E'),
+                        updatetime: rowData.updatetime == null ? '暂未更新' : moment(rowData.updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E'),
+                        read: rowData.read,
+                        praise: rowData.praise,
+                        original: rowData.original,
+                        id: rowData.id
+                    })
                 }
-                callback(null, results)
+                callback(null, tableData)
             } else {
                 callback(null, { msg: '没有数据' })
             }
@@ -129,7 +158,6 @@ module.exports.articleList = (req, res) => {
 
 // 文章详情
 module.exports.articleDetails = (req, res) => {
-    // const sql = 'SELECT * FROM article WHERE id='+ req.params.articleId
     const sql = `SELECT a.*,c.classname FROM
     article AS a LEFT OUTER JOIN category AS c
     ON a.category_id = c.id
@@ -222,7 +250,10 @@ module.exports.deleteArticle = (req, res) => {
 
 // 搜索数据
 module.exports.searchData = (req, res, data) => {
-    const sql = `SELECT * FROM article WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or type Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'`
+    const sql = `SELECT a.*,c.classname FROM
+    article AS a LEFT OUTER JOIN category AS c
+    ON a.category_id = c.id
+    WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'`
     connect.query(sql, function(error, results, fields) {
         if (error) throw error
 
@@ -278,5 +309,26 @@ module.exports.category = (req, res) => {
             })
         }
         res.send(data)
+    })
+}
+
+// 文章排序数据
+module.exports.getOrderData = (req, res) => {
+    const sortField = req.params.sortField // 获取排序的字段
+    const orderBy = req.params.orderBy === 'descending' ? 'desc' : 'asc' // 获取排序的方式
+    const number = req.params.number // 获取条数
+    const sql = `SELECT a.*,c.classname FROM
+        article AS a LEFT OUTER JOIN category AS c
+        ON a.category_id = c.id
+        ORDER BY ${sortField} ${orderBy}
+        LIMIT 0,${number}` // 默认返回 6 条数据
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+
+        if(results.length >= 1) { // 判断是否有数据
+            res.send(results) // 返回数据
+        } else {
+            res.send(null, { msg: '没有数据' })
+        }
     })
 }
