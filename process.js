@@ -14,7 +14,7 @@ const moment = require('moment')
 module.exports.getIndex = (req, res) => {
     // 获取文章的数据
     const article =  function(callback) {
-        const sql = "SELECT * FROM article ORDER BY updatetime desc"
+        const sql = "SELECT * FROM article ORDER BY updatetime DESC LIMIT 0,5"
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
     
