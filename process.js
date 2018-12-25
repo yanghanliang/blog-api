@@ -14,7 +14,9 @@ const moment = require('moment')
 module.exports.getIndex = (req, res) => {
     // 获取文章的数据
     const article =  function(callback) {
-        const sql = "SELECT * FROM article ORDER BY updatetime DESC LIMIT 0,5"
+        const sql = `SELECT a.*,c.classname FROM
+        article AS a LEFT OUTER JOIN category AS c
+        ON a.category_id = c.id ORDER BY updatetime DESC LIMIT 0,5`
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
     
@@ -105,6 +107,14 @@ const stitchingString = (str, interceptLength) => { // 字符串拼接
         return str.substr(0, interceptLength) + '...'
     }
     return str
+}
+
+// 格式化时间
+const formatTime = function(results) {
+    for (let i = 0; i < results.length; i++) { // 格式化时间
+        results[i].createtime = results[i].createtime === null ? null : moment(results[i].createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+        results[i].updatetime = results[i].updatetime === null ? null : moment(results[i].updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+    }
 }
 
 // 获取文章列表
@@ -278,10 +288,7 @@ module.exports.paging = (req, res) => {
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         if (results.length > 0) {
-            for (let i = 0; i < results.length; i++) { // 格式化时间
-                results[i].createtime = results[i].createtime === null ? null : moment(results[i].createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
-                results[i].updatetime = results[i].updatetime === null ? null : moment(results[i].updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
-            }
+            formatTime(results) // 格式化时间
             res.send({
                 status: 200,
                 data: results
@@ -304,19 +311,21 @@ module.exports.category = (req, res) => {
 }
 
 // 文章排序数据
-module.exports.getOrderData = (req, res) => {
-    const sortField = req.params.sortField // 获取排序的字段
-    const orderBy = req.params.orderBy === 'descending' ? 'desc' : 'asc' // 获取排序的方式
-    const number = req.params.number // 获取条数
+module.exports.getOrderData = (req, res, data) => {
+    const sortField = data.sortField // 获取排序的字段
+    const orderBy = data.orderBy === 'descending' ? 'desc' : 'asc' // 获取排序的方式
+    const number = data.number ? data.number : 5 // 获取条数(默认5条)
+    const currentPage = data.currentPage ? data.currentPage : 0 // 获取当前页
     const sql = `SELECT a.*,c.classname FROM
         article AS a LEFT OUTER JOIN category AS c
         ON a.category_id = c.id
         ORDER BY ${sortField} ${orderBy}
-        LIMIT 0,${number}` // 默认返回 6 条数据
+        LIMIT ${currentPage},${number}` // 默认返回 6 条数据
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
 
         if(results.length >= 1) { // 判断是否有数据
+            formatTime(results) // 格式化时间
             res.send(results) // 返回数据
         } else {
             res.send(null, { msg: '没有数据' })

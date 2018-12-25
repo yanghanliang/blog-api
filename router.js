@@ -68,8 +68,8 @@ router.get('/category', (req, res) => {
 })
 
 // 文章排序数据
-router.get('/getOrderData/:sortField/:orderBy/:number', (req, res) => {
-    process.getOrderData(req, res)
+router.post('/getOrderData', (req, res) => {
+    process.getOrderData(req, res, req.body)
 })
 
 // 将 router 暴露出去

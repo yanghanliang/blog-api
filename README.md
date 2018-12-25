@@ -143,3 +143,4 @@ if (error) throw error
 
 > 获取首页需要的数据
 
++ 默认获取5条文章数据,并且是根据 `updatetime` 降序
