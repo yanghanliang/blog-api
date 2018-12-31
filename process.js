@@ -7,9 +7,6 @@ const jwt = require('jsonwebtoken')
 // 解决异步操作
 const async = require('async')
 
-// 格式化时间
-const moment = require('moment')
-
 // 访问首页
 module.exports.getIndex = (req, res) => {
     // 获取文章的数据
@@ -90,7 +87,7 @@ module.exports.login = (req, res, data) => {
 
 // 获取文章表的总条数
 const getArticleNumber = function(callback) {
-    const sql = 'SELECT COUNT(*) FROM article'
+    var sql = 'SELECT COUNT(*) FROM article'
     connect.query(sql, (error, results, fields) => {
         callback(null, results[0]['COUNT(*)'])
     })
@@ -110,12 +107,13 @@ const stitchingString = (str, interceptLength) => { // 字符串拼接
 }
 
 // 格式化时间
-const formatTime = function(results) {
-    for (let i = 0; i < results.length; i++) { // 格式化时间
-        results[i].createtime = results[i].createtime === null ? null : moment(results[i].createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
-        results[i].updatetime = results[i].updatetime === null ? null : moment(results[i].updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
-    }
-}
+// const formatTime = function(results) {
+//     for (let i = 0; i < results.length; i++) { // 格式化时间
+//         results[i].createtime = results[i].createtime === null ? null : moment(results[i].createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+//         // 必须将 null 换成 '' 否则将会影响前端数据排序渲染，详情查看前端文档
+//         results[i].updatetime = results[i].updatetime === null ? '暂未更新' : moment(results[i].updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
+//     }
+// }
 
 // 获取文章列表
 module.exports.articleList = (req, res) => {
@@ -141,8 +139,8 @@ module.exports.articleList = (req, res) => {
                         title: stitchingString(rowData.title, 26),
                         classname: rowData.classname,
                         synopsis: rowData.synopsis,
-                        createtime: rowData.createtime == null ? '暂未更新' : moment(rowData.createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E'),
-                        updatetime: rowData.updatetime == null ? '暂未更新' : moment(rowData.updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E'),
+                        createtime: rowData.createtime,
+                        updatetime: rowData.updatetime,
                         read: rowData.read,
                         praise: rowData.praise,
                         original: rowData.original,
@@ -258,37 +256,64 @@ module.exports.deleteArticle = (req, res) => {
 
 // 搜索数据
 module.exports.searchData = (req, res, data) => {
+    const getData = (callback) => {
     const sql = `SELECT a.*,c.classname FROM
     article AS a LEFT OUTER JOIN category AS c
     ON a.category_id = c.id
     WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'`
+
     connect.query(sql, function(error, results, fields) {
         if (error) throw error
 
         if (results.length > 0) {
-            res.send({
-                status: 200,
-                data: results
-            })
+                callback(null, { status: 200, data: results })
         } else {
-            res.send({
-                msg: '没有找到数据, 主人啥都没写,懒死他了~'
+                // res.send({
+                //     msg: '没有找到数据, 主人啥都没写,懒死他了~'
+                // })
+                callback(null, { msg: '没有找到数据, 主人啥都没写,懒死他了~' })
+            }
             })
         }
+
+    const getNumber = (callback) => {
+        const sql = `SELECT COUNT(*) FROM
+            article AS a LEFT OUTER JOIN category AS c
+            ON a.category_id = c.id
+            WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'`
+        connect.query(sql, (error, results, fields) => {
+            callback(null, results[0]['COUNT(*)'])
+    })
+
+}
+
+    // 并行执行,但保证了 results 的结果是正确的
+    async.parallel({getNumber, getData}, function(error, results) {
+        if (error) throw error
+        // 返回数据
+        res.send(results)
     })
 }
 
 // 文章分页
-module.exports.paging = (req, res) => {
-    const currentPage = req.params.currentPage, // 获取当前页
-          number = req.params.number // 获取条数
+module.exports.paging = (req, res, data) => {
+    const sortField = data.sortField, // 获取排序的字段
+          currentNumber = (data.currentPage - 1) * data.pageSize // 当前第几条 = (当前页-1) * 每页条数, // 获取当前页
+          pageSize = data.pageSize, // 获取条数
+          orderBy = data.orderBy === 'descending' ? 'desc' : 'asc', // 获取排序的方式
+          searchData = data.searchData // 搜索的内容
+
+    if (searchData === '') { // 如果没有搜索内容则不做搜索查询
     const sql = `SELECT a.*,c.classname FROM
     article AS a LEFT OUTER JOIN category AS c
-    ON a.category_id = c.id LIMIT ${currentPage},${number}`
+                    ON a.category_id = c.id
+                    ORDER BY ${sortField} ${orderBy}
+                    LIMIT ${currentNumber},${pageSize}`
+        
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         if (results.length > 0) {
-            formatTime(results) // 格式化时间
+                // formatTime(results) // 格式化时间
             res.send({
                 status: 200,
                 data: results
@@ -299,6 +324,44 @@ module.exports.paging = (req, res) => {
             })
         }
     })
+    } else {
+        const getNumber = (callback) => {
+            const sql = `SELECT COUNT(*) FROM
+                article AS a LEFT OUTER JOIN category AS c
+                ON a.category_id = c.id
+                WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'`
+            connect.query(sql, (error, results, fields) => {
+                callback(null, results[0]['COUNT(*)'])
+            })
+        }
+
+        const getData = (callback) => {
+            const sql = `SELECT a.*,c.classname FROM
+                    article AS a LEFT OUTER JOIN category AS c
+                    ON a.category_id = c.id
+                    WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'
+                    ORDER BY ${sortField} ${orderBy}
+                    LIMIT ${currentNumber},${pageSize}`
+                console.log(sql)
+            connect.query(sql, function(error, results, fields) {
+                if (error) throw error
+    
+                if (results.length > 0) {
+                    // formatTime(results) // 格式化时间
+                    callback(null, { status: 200, data: results })
+                } else {
+                    callback(null, { msg: '没有找到数据, 主人啥都没写,懒死他了~' })
+                }
+            })
+        }
+
+        // 并行执行,但保证了 results 的结果是正确的
+        async.parallel({getNumber, getData}, function(error, results) {
+            if (error) throw error
+            // 返回数据
+            res.send(results)
+        })
+}
 }
 
 // 获取分类数据
@@ -325,7 +388,7 @@ module.exports.getOrderData = (req, res, data) => {
         if (error) throw error
 
         if(results.length >= 1) { // 判断是否有数据
-            formatTime(results) // 格式化时间
+            // formatTime(results) // 格式化时间
             res.send(results) // 返回数据
         } else {
             res.send(null, { msg: '没有数据' })

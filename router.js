@@ -58,8 +58,8 @@ router.post('/searchData', (req, res) => {
 })
 
 // 文章分页
-router.get('/paging/:currentPage/:number', (req, res) => {
-    process.paging(req, res)
+router.post('/paging', (req, res) => {
+    process.paging(req, res, req.body)
 })
 
 // 获取分类数据
