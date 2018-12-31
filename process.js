@@ -106,15 +106,6 @@ const stitchingString = (str, interceptLength) => { // 字符串拼接
     return str
 }
 
-// 格式化时间
-// const formatTime = function(results) {
-//     for (let i = 0; i < results.length; i++) { // 格式化时间
-//         results[i].createtime = results[i].createtime === null ? null : moment(results[i].createtime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
-//         // 必须将 null 换成 '' 否则将会影响前端数据排序渲染，详情查看前端文档
-//         results[i].updatetime = results[i].updatetime === null ? '暂未更新' : moment(results[i].updatetime).format('YYYY年-MM月-DD日 HH时:mm分:ss秒 星期E')
-//     }
-// }
-
 // 获取文章列表
 module.exports.articleList = (req, res) => {
     const sortField = req.params.sortField // 排序的字段
@@ -297,33 +288,33 @@ module.exports.searchData = (req, res, data) => {
 
 // 文章分页
 module.exports.paging = (req, res, data) => {
-    const sortField = data.sortField, // 获取排序的字段
+    const sortField = data.sortField ? data.sortField : 'updatetime', // 获取排序的字段(默认以更新时间排序)
           currentNumber = (data.currentPage - 1) * data.pageSize // 当前第几条 = (当前页-1) * 每页条数, // 获取当前页
           pageSize = data.pageSize, // 获取条数
           orderBy = data.orderBy === 'descending' ? 'desc' : 'asc', // 获取排序的方式
           searchData = data.searchData // 搜索的内容
 
-    if (searchData === '') { // 如果没有搜索内容则不做搜索查询
-    const sql = `SELECT a.*,c.classname FROM
-    article AS a LEFT OUTER JOIN category AS c
-                    ON a.category_id = c.id
-                    ORDER BY ${sortField} ${orderBy}
-                    LIMIT ${currentNumber},${pageSize}`
-        
-    connect.query(sql, (error, results, fields) => {
-        if (error) throw error
-        if (results.length > 0) {
-                // formatTime(results) // 格式化时间
-            res.send({
-                status: 200,
-                data: results
-            })
-        } else {
-            res.send({
-                msg: '大佬别点了, 真没了!'
-            })
-        }
-    })
+    if (searchData === '' || searchData === undefined) { // 如果没有搜索内容则不做搜索查询
+        const sql = `SELECT a.*,c.classname FROM
+        article AS a LEFT OUTER JOIN category AS c
+                        ON a.category_id = c.id
+                        ORDER BY ${sortField} ${orderBy}
+                        LIMIT ${currentNumber},${pageSize}`
+        console.log(sql)
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            if (results.length > 0) {
+                    // formatTime(results) // 格式化时间
+                res.send({
+                    status: 200,
+                    data: results
+                })
+            } else {
+                res.send({
+                    msg: '大佬别点了, 真没了!'
+                })
+            }
+        })
     } else {
         const getNumber = (callback) => {
             const sql = `SELECT COUNT(*) FROM
@@ -342,7 +333,7 @@ module.exports.paging = (req, res, data) => {
                     WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'
                     ORDER BY ${sortField} ${orderBy}
                     LIMIT ${currentNumber},${pageSize}`
-                console.log(sql)
+            console.log(sql)
             connect.query(sql, function(error, results, fields) {
                 if (error) throw error
     
@@ -370,28 +361,5 @@ module.exports.category = (req, res) => {
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send(results)
-    })
-}
-
-// 文章排序数据
-module.exports.getOrderData = (req, res, data) => {
-    const sortField = data.sortField // 获取排序的字段
-    const orderBy = data.orderBy === 'descending' ? 'desc' : 'asc' // 获取排序的方式
-    const number = data.number ? data.number : 5 // 获取条数(默认5条)
-    const currentPage = data.currentPage ? data.currentPage : 0 // 获取当前页
-    const sql = `SELECT a.*,c.classname FROM
-        article AS a LEFT OUTER JOIN category AS c
-        ON a.category_id = c.id
-        ORDER BY ${sortField} ${orderBy}
-        LIMIT ${currentPage},${number}` // 默认返回 6 条数据
-    connect.query(sql, (error, results, fields) => {
-        if (error) throw error
-
-        if(results.length >= 1) { // 判断是否有数据
-            // formatTime(results) // 格式化时间
-            res.send(results) // 返回数据
-        } else {
-            res.send(null, { msg: '没有数据' })
-        }
     })
 }

@@ -67,10 +67,5 @@ router.get('/category', (req, res) => {
     process.category(req, res)
 })
 
-// 文章排序数据
-router.post('/getOrderData', (req, res) => {
-    process.getOrderData(req, res, req.body)
-})
-
 // 将 router 暴露出去
 module.exports = router
