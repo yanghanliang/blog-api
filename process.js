@@ -163,6 +163,7 @@ module.exports.articleDetails = (req, res) => {
         if(error) throw error
 
         if(results.length >= 1) {
+            results[0].content = results[0].content.replace(/(&apos;)+/g, '\'') // 还原单引号
             // 返回数据
             res.send(results)
         } else {
@@ -203,9 +204,10 @@ module.exports.editArticle = (req, res, data) => {
     const categoryId = data.classname, // 类型
           title = data.title, // 标题
           synopsis = data.synopsis, // 简介
-          content = data.content, // 内容
+          content = data.content.replace(/[']+/g, '&apos;'), // 内容, 单引号转义
           id = req.params.articleId // id
     const sql = `UPDATE article SET category_id=${categoryId}, title='${title}', synopsis='${synopsis}', content='${content}', updatetime=${updatetime} WHERE id=${id}`
+    
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error
@@ -251,21 +253,19 @@ module.exports.searchData = (req, res, data) => {
     const sql = `SELECT a.*,c.classname FROM
     article AS a LEFT OUTER JOIN category AS c
     ON a.category_id = c.id
-    WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'`
-
+    WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'
+    ORDER BY updatetime desc
+    LIMIT 0,5`
     connect.query(sql, function(error, results, fields) {
         if (error) throw error
 
         if (results.length > 0) {
-                callback(null, { status: 200, data: results })
+            callback(null, { status: 200, data: results })
         } else {
-                // res.send({
-                //     msg: '没有找到数据, 主人啥都没写,懒死他了~'
-                // })
-                callback(null, { msg: '没有找到数据, 主人啥都没写,懒死他了~' })
-            }
-            })
+            callback(null, { msg: '没有找到数据, 主人啥都没写,懒死他了~' })
         }
+        })
+    }
 
     const getNumber = (callback) => {
         const sql = `SELECT COUNT(*) FROM
@@ -292,26 +292,57 @@ module.exports.paging = (req, res, data) => {
           currentNumber = (data.currentPage - 1) * data.pageSize // 当前第几条 = (当前页-1) * 每页条数, // 获取当前页
           pageSize = data.pageSize, // 获取条数
           orderBy = data.orderBy === 'descending' ? 'desc' : 'asc', // 获取排序的方式
-          searchData = data.searchData // 搜索的内容
+          searchData = data.searchData, // 搜索的内容
+          classname = data.classname // 类名
 
-    if (searchData === '' || searchData === undefined) { // 如果没有搜索内容则不做搜索查询
+    if (classname) {
         const sql = `SELECT a.*,c.classname FROM
-        article AS a LEFT OUTER JOIN category AS c
-                        ON a.category_id = c.id
-                        ORDER BY ${sortField} ${orderBy}
-                        LIMIT ${currentNumber},${pageSize}`
-        console.log(sql)
+            article AS a LEFT OUTER JOIN category AS c
+            ON a.category_id = c.id
+            WHERE classname = '${classname}'
+            ORDER BY ${sortField} ${orderBy}
+            LIMIT ${currentNumber},${pageSize}`
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
             if (results.length > 0) {
-                    // formatTime(results) // 格式化时间
+                // formatTime(results) // 格式化时间
                 res.send({
-                    status: 200,
-                    data: results
+                    getData: {
+                        status: 200,
+                        data: results
+                    }
                 })
             } else {
                 res.send({
-                    msg: '大佬别点了, 真没了!'
+                    getData: {
+                        status: 201,
+                        msg: '没有更多了~'
+                    }
+                })
+            }
+        })
+    } else if (searchData === '' || searchData === undefined) { // 如果没有搜索内容则不做搜索查询
+        const sql = `SELECT a.*,c.classname FROM
+            article AS a LEFT OUTER JOIN category AS c
+            ON a.category_id = c.id
+            ORDER BY ${sortField} ${orderBy}
+            LIMIT ${currentNumber},${pageSize}`
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            if (results.length > 0) {
+                // formatTime(results) // 格式化时间
+                res.send({
+                    getData: {
+                        status: 200,
+                        data: results
+                    }
+                })
+            } else {
+                res.send({
+                    getData: {
+                        status: 201,
+                        msg: '没有更多了~'
+                    }
                 })
             }
         })
@@ -333,15 +364,13 @@ module.exports.paging = (req, res, data) => {
                     WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'
                     ORDER BY ${sortField} ${orderBy}
                     LIMIT ${currentNumber},${pageSize}`
-            console.log(sql)
             connect.query(sql, function(error, results, fields) {
                 if (error) throw error
     
                 if (results.length > 0) {
-                    // formatTime(results) // 格式化时间
                     callback(null, { status: 200, data: results })
                 } else {
-                    callback(null, { msg: '没有找到数据, 主人啥都没写,懒死他了~' })
+                    callback(null, { msg: '没有更多了~' })
                 }
             })
         }
@@ -352,7 +381,7 @@ module.exports.paging = (req, res, data) => {
             // 返回数据
             res.send(results)
         })
-}
+    }
 }
 
 // 获取分类数据
@@ -360,6 +389,42 @@ module.exports.category = (req, res) => {
     const sql = 'SELECT classname,id FROM category'
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
+        res.send(results)
+    })
+}
+
+// 获取文章分类数据
+module.exports.articleCategory = (req, res) => {
+    const classname = req.params.classname
+    const getNumber = (callback) => {
+        const sql = `SELECT COUNT(*) FROM
+            article AS a LEFT OUTER JOIN category AS c
+            ON a.category_id = c.id
+            WHERE classname = '${classname}'`
+        connect.query(sql, (error, results, fields) => {
+            callback(null, results[0]['COUNT(*)'])
+        })
+    }
+    const getData = (callback) => {
+        const sql = `SELECT a.*,c.classname FROM
+            article AS a LEFT OUTER JOIN category AS c
+            ON a.category_id = c.id
+            WHERE classname = '${classname}'
+            ORDER BY updatetime desc
+            LIMIT 0, 5`
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            if (results.length > 0) {
+                callback(null, { status: 200, data: results })
+            } else {
+                callback(null, { msg: '没有找到数据, 主人啥都没写,懒死他了~' })
+            }
+        })
+    }
+    // 并行执行,但保证了 results 的结果是正确的
+    async.parallel({getNumber, getData}, function(error, results) {
+        if (error) throw error
+        // 返回数据
         res.send(results)
     })
 }

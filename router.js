@@ -5,17 +5,8 @@ var express = require('express')
 // 引入处理方法
 var process = require('./process.js')
 
-
-// const async = require('async')
-
 // 创建路由对象
 var router = express.Router()
-
-// 设置路由
-// router.get('/', function (req, res) {
-//     process.getIndex(req, res)
-//     // res.send('hello world')
-// })
 
 // 调用自定义登录的方法
 router.post('/login', (req, res) => {
@@ -65,6 +56,11 @@ router.post('/paging', (req, res) => {
 // 获取分类数据
 router.get('/category', (req, res) => {
     process.category(req, res)
+})
+
+// 获取文章分类数据
+router.get('/articleCategory/:classname', (req, res) => {
+    process.articleCategory(req, res)
 })
 
 // 将 router 暴露出去
