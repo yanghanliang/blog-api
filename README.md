@@ -119,6 +119,17 @@ article as a left outer join category as c
 on a.category_id = c.id;
 ```
 
+## 笔记表
+
+```sql
+create table if not exists note(
+	`id` smallint(6) NOT NULL auto_increment primary key,
+	`category_id` smallint(6) COMMENT '分类id',
+	`content` text NOT NULL COMMENT '内容'
+)ENGINE=INNODB DEFAULT CHARSET=utf8;
+```
+
+
 
 if(error) {
 	console.log(error)

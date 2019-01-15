@@ -184,7 +184,7 @@ module.exports.addArticle = (req, res, data) => {
           synopsis = data.synopsis, // 简介
           content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
 
-    const sql = `INSERT INTO article(category_id, title, synopsis, createtime, content) values ('${classNameId}', '${title}', '${synopsis}', '${createtime}', '${content}')`
+    const sql = `INSERT INTO article(category_id, title, synopsis, createtime, content) VALUES ('${classNameId}', '${title}', '${synopsis}', '${createtime}', '${content}')`
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error
@@ -386,7 +386,7 @@ module.exports.paging = (req, res, data) => {
 
 // 获取分类数据
 module.exports.category = (req, res) => {
-    const sql = 'SELECT classname,id FROM category'
+    const sql = 'SELECT * FROM category ORDER BY pid'
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send(results)
@@ -426,5 +426,38 @@ module.exports.articleCategory = (req, res) => {
         if (error) throw error
         // 返回数据
         res.send(results)
+    })
+}
+
+// 添加分类
+module.exports.addCategory = (req, res, data) => {
+    const classname = data.classname // 获取分类名称
+    const pid = data.pid // 获取所在层级
+    const sql = `INSERT INTO category(classname, pid) VALUES ('${classname}', ${pid})`
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        res.send({
+            status: 200,
+            msg: '添加成功！'
+        })
+    })
+}
+
+module.exports.testData = (req, res) => {
+    const sql = `SELECT * FROM note as n LEFT OUTER JOIN category as c
+        ON n.category_id = c.id`
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        if (results.length > 0) {
+            res.send({
+                status: 200,
+                data: results
+            })
+        } else {
+            res.send({
+                status: 201,
+                msg: '没有数据~'
+            })
+        }
     })
 }

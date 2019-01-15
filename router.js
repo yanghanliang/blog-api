@@ -18,6 +18,7 @@ router.get('/index', (req, res) => {
     process.getIndex(req, res) 
 })
 
+// 文章-start
 // 添加文章
 router.post('/addArticle', (req, res) => {
     process.addArticle(req, res, req.body)
@@ -53,14 +54,26 @@ router.post('/paging', (req, res) => {
     process.paging(req, res, req.body)
 })
 
+// 获取文章分类数据
+router.get('/articleCategory/:classname', (req, res) => {
+    process.articleCategory(req, res)
+})
+// 文章-end
+
+
+// 分类-start
 // 获取分类数据
 router.get('/category', (req, res) => {
     process.category(req, res)
 })
 
-// 获取文章分类数据
-router.get('/articleCategory/:classname', (req, res) => {
-    process.articleCategory(req, res)
+router.post('/addCategory', (req, res) => {
+    process.addCategory(req, res, req.body)
+})
+// 分类-end
+
+router.get('/testData', (req, res) => {
+    process.testData(req, res)
 })
 
 // 将 router 暴露出去
