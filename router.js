@@ -58,6 +58,11 @@ router.post('/paging', (req, res) => {
 router.get('/articleCategory/:classname', (req, res) => {
     process.articleCategory(req, res)
 })
+
+// 记录文章阅读数
+router.get('/recordReadingNumber/:articleId', (req, res) => {
+    process.recordReadingNumber(req, res)
+})
 // 文章-end
 
 

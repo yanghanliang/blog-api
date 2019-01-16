@@ -155,10 +155,11 @@ module.exports.articleList = (req, res) => {
 
 // 文章详情
 module.exports.articleDetails = (req, res) => {
+    const id = req.params.articleId // 获取文章 id
     const sql = `SELECT a.*,c.classname FROM
     article AS a LEFT OUTER JOIN category AS c
     ON a.category_id = c.id
-    WHERE a.id= ${req.params.articleId}`
+    WHERE a.id= ${id}`
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
 
@@ -459,5 +460,17 @@ module.exports.testData = (req, res) => {
                 msg: '没有数据~'
             })
         }
+    })
+}
+
+// 记录文章阅读数
+module.exports.recordReadingNumber = (req, res) => {
+    const id = req.params.articleId // 获取文章 id
+    const sql = 'UPDATE article SET `read`=`read`+1 WHERE id = '+ id
+    connect.query(sql, function(error) {
+        if (error) throw error
+        res.send({
+            status: 200
+        })
     })
 }
