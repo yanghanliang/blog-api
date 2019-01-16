@@ -40,7 +40,7 @@ router.delete('/deleteArticle/:articleId', (req, res) => {
 })
 
 // 获取文章详情数据
-router.get('/articleDetakils/:articleId', (req, res) => {
+router.get('/articleDetails/:articleId', (req, res) => {
     process.articleDetails(req, res)
 })
 
