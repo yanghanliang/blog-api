@@ -63,6 +63,11 @@ router.get('/articleCategory/:classname', (req, res) => {
 router.get('/recordReadingNumber/:articleId', (req, res) => {
     process.recordReadingNumber(req, res)
 })
+
+// 上一篇和下一篇(title id)
+router.get('/during/:articleId', (req, res) => {
+    process.during(req, res)
+})
 // 文章-end
 
 

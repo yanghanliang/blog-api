@@ -247,3 +247,32 @@ results[i].updatetime = results[i].updatetime === null ? '' : moment(results[i].
 
 
 > paging-api 分类接口，融合了模糊搜索，排序，分页功能
+
+
+## 获取上一篇和下一篇文章
+
++ preArticle
+
+```sql
+
+const sql = `SELECT title, a.id FROM
+        article as a LEFT OUTER JOIN category as c
+        ON a.category_id = c.id
+        WHERE a.id > ${id}
+        ORDER BY createtime
+        LIMIT 1`
+
+```
+
++ nextArticle
+
+```sql
+
+const sql = `SELECT title, a.id FROM
+        article as a LEFT OUTER JOIN category as c
+        ON a.category_id = c.id
+        WHERE a.id < ${id}
+        ORDER BY createtime desc
+        LIMIT 1`
+
+```

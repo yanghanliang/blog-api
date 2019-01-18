@@ -403,6 +403,7 @@ module.exports.articleCategory = (req, res) => {
             ON a.category_id = c.id
             WHERE classname = '${classname}'`
         connect.query(sql, (error, results, fields) => {
+            if (error) throw error
             callback(null, results[0]['COUNT(*)'])
         })
     }
@@ -472,5 +473,49 @@ module.exports.recordReadingNumber = (req, res) => {
         res.send({
             status: 200
         })
+    })
+}
+
+// 获取上一篇和下一篇文章的 title && id
+module.exports.during = (req, res) => {
+    const id = req.params.articleId // 获取当前文章的 id
+    const preArticle = (callback) => { // 上一篇
+        const sql = `SELECT title, a.id FROM
+        article as a LEFT OUTER JOIN category as c
+        ON a.category_id = c.id
+        WHERE a.id > ${id}
+        ORDER BY createtime
+        LIMIT 1`
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            if (results.length > 0) {
+                callback(null, { status: 200, data: results[0] })
+            } else {
+                callback(null, { status: 201, msg: '没有上一篇了' })
+            }
+        })
+    }
+
+    const nextArticle = (callback) => { // 下一篇
+        const sql = `SELECT title, a.id FROM
+        article as a LEFT OUTER JOIN category as c
+        ON a.category_id = c.id
+        WHERE a.id < ${id}
+        ORDER BY createtime desc
+        LIMIT 1`
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            if (results.length > 0) {
+                callback(null, { status: 200, data: results[0] })
+            } else {
+                callback(null, { status: 201, msg: '没有下一篇了' })
+            }
+        })
+    }
+    // 并行执行,但保证了 results 的结果是正确的
+    async.parallel({preArticle, nextArticle}, function(error, results) {
+        if (error) throw error
+        // 返回数据
+        res.send(results)
     })
 }
