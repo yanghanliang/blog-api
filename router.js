@@ -73,12 +73,28 @@ router.get('/during/:articleId', (req, res) => {
 
 // 分类-start
 // 获取分类数据
-router.get('/category', (req, res) => {
+router.get(['/category', '/catalog'], (req, res) => {
     process.category(req, res)
 })
 
+// 获取修改分类的数据
+router.get('/editCategory/:categoryId', (req, res) => {
+    process.editCategory(req, res)
+})
+
+// 更新分类数据
+router.put('/updateCategory', (req, res) => {
+    process.updateCategory(req, res, req.body)
+})
+
+// 添加分类
 router.post('/addCategory', (req, res) => {
     process.addCategory(req, res, req.body)
+})
+
+// 删除分类
+router.delete('/deleteCategory/:categoryId', (req, res) => {
+    process.deleteCategory(req, res)
 })
 // 分类-end
 

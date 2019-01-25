@@ -387,6 +387,7 @@ module.exports.paging = (req, res, data) => {
 
 // 获取分类数据
 module.exports.category = (req, res) => {
+    console.log(req.route)
     const sql = 'SELECT * FROM category ORDER BY pid'
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
@@ -435,13 +436,98 @@ module.exports.articleCategory = (req, res) => {
 module.exports.addCategory = (req, res, data) => {
     const classname = data.classname // 获取分类名称
     const pid = data.pid // 获取所在层级
-    const sql = `INSERT INTO category(classname, pid) VALUES ('${classname}', ${pid})`
+    // const sql = `INSERT INTO category(classname, pid) VALUES ('${classname}', ${pid})`
+    // connect.query(sql, (error, results, fields) => {
+    //     if (error) throw error
+    //     res.send({
+    //         status: 200,
+    //         msg: '添加成功！'
+    //     })
+    // })
+
+    var selectPidClassName = function(callback){
+        if (pid === 0) {
+            callback(null, '第一层级')
+        } else {
+            const sql = `SELECT classname FROM category WHERE id=${pid}`
+            connect.query(sql, (error, results, fields) => {
+                if (error) throw error
+                if (results.length === 1) {
+                    callback(null, results[0].classname)
+                }
+            })
+        }
+        
+	}
+ 
+	var addCategoryClassName =function(pid_classname, callback){
+        const sql = `INSERT INTO category(classname, pid, pid_classname) VALUES ('${classname}', ${pid}, '${pid_classname}')`
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            callback(null, {
+                status: 200,
+                msg: '添加成功！'
+            })
+        })
+    }
+
+	async.waterfall([selectPidClassName, addCategoryClassName],function(err,result){
+		if (err) {
+			console.log(err);
+		}
+        res.send(result)
+	})
+
+}
+
+// 修改分类
+module.exports.editCategory = (req, res) => {
+    const id = req.params.categoryId
+    const sql = `SELECT * FROM category WHERE id = ${id}`
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        if (results.length === 1) {
+            res.send({
+                status: 200,
+                data: results
+            })
+        }
+    })
+}
+
+// 更新分类数据
+module.exports.updateCategory = (req, res, data) => {
+    const id = data.id
+    const pid = data.pid
+    const classname = data.classname
+    const pid_classname = data.pid_classname
+    const sql = `UPDATE category SET pid=${pid}, classname='${classname}', pid_classname='${pid_classname}' WHERE id=${id}`
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send({
             status: 200,
-            msg: '添加成功！'
+            msg: '修改成功！'
         })
+    })
+}
+
+// 删除分类
+module.exports.deleteCategory = (req, res) => {
+    const id = req.params.categoryId
+    const sql = `DELETE FROM category WHERE id=${id}`
+    connect.query(sql, (error, results, fields) => {
+        if (error) {
+            res.send({
+                status: 201,
+                msg: '删除失败！'
+            })
+            throw error
+        } else {
+            res.send({
+                status: 200,
+                msg: '删除成功！'
+            })
+        }
     })
 }
 

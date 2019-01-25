@@ -101,14 +101,16 @@ SELECT * FROM article WHERE title Like '%qw%' or content Like '%qw%'
 
 
 ## 分类表
-
 ```sql
-create table if not exists category(
-	`id` smallint(6) NOT NULL auto_increment primary key,
-	`classname` varchar(30) NOT NULL COMMENT '分类名称',
-	`pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id'
-)ENGINE=INNODB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `category` (
+  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `classname` varchar(30) NOT NULL COMMENT '分类名称',
+  `pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
+  `pid_classname` varchar(30) NOT NULL COMMENT '父分类名称',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
 ```
+
 
 ## articleList-api
 mysql 连表查询,取一个表的所有数据和取另一个表的某个字段
