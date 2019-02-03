@@ -387,7 +387,6 @@ module.exports.paging = (req, res, data) => {
 
 // 获取分类数据
 module.exports.category = (req, res) => {
-    console.log(req.route)
     const sql = 'SELECT * FROM category ORDER BY pid'
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
@@ -471,13 +470,10 @@ module.exports.addCategory = (req, res, data) => {
         })
     }
 
-	async.waterfall([selectPidClassName, addCategoryClassName],function(err,result){
-		if (err) {
-			console.log(err);
-		}
+	async.waterfall([selectPidClassName, addCategoryClassName],function(error,result){
+		if (error) throw error 
         res.send(result)
 	})
-
 }
 
 // 修改分类
@@ -564,13 +560,11 @@ module.exports.recordReadingNumber = (req, res) => {
 
 // 获取上一篇和下一篇文章的 title && id
 module.exports.during = (req, res) => {
-    const id = req.params.articleId // 获取当前文章的 id
+    const updatetime = req.params.updatetime // 获取当前文章的 id
     const preArticle = (callback) => { // 上一篇
-        const sql = `SELECT title, a.id FROM
-        article as a LEFT OUTER JOIN category as c
-        ON a.category_id = c.id
-        WHERE a.id > ${id}
-        ORDER BY createtime
+        const sql = `SELECT title, id FROM article
+        WHERE updatetime > ${updatetime}
+        ORDER BY updatetime
         LIMIT 1`
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
@@ -583,11 +577,9 @@ module.exports.during = (req, res) => {
     }
 
     const nextArticle = (callback) => { // 下一篇
-        const sql = `SELECT title, a.id FROM
-        article as a LEFT OUTER JOIN category as c
-        ON a.category_id = c.id
-        WHERE a.id < ${id}
-        ORDER BY createtime desc
+        const sql = `SELECT title, id FROM article
+        WHERE updatetime < ${updatetime}
+        ORDER BY updatetime desc
         LIMIT 1`
         connect.query(sql, (error, results, fields) => {
             if (error) throw error

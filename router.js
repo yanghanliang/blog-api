@@ -65,7 +65,7 @@ router.get('/recordReadingNumber/:articleId', (req, res) => {
 })
 
 // 上一篇和下一篇(title id)
-router.get('/during/:articleId', (req, res) => {
+router.get('/during/:updatetime', (req, res) => {
     process.during(req, res)
 })
 // 文章-end
