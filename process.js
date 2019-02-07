@@ -597,3 +597,22 @@ module.exports.during = (req, res) => {
         res.send(results)
     })
 }
+
+// 获取目录数据(index)
+module.exports.catalog = (req, res) => {
+    const sql = 'SELECT createtime, title, id FROM article ORDER BY createtime DESC'
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        if (results.length > 0) {
+            res.send({
+                status: 200,
+                data: results
+            })
+        } else {
+            res.send({
+                status: 201,
+                msg: '暂无数据!'
+            })
+        }
+    })
+}

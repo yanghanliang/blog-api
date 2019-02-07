@@ -68,12 +68,17 @@ router.get('/recordReadingNumber/:articleId', (req, res) => {
 router.get('/during/:updatetime', (req, res) => {
     process.during(req, res)
 })
+
+// 获取目录数据
+router.get('/catalog', (req, res) => {
+    process.catalog(req, res)
+})
 // 文章-end
 
 
 // 分类-start
 // 获取分类数据
-router.get(['/category', '/catalog'], (req, res) => {
+router.get('/category', (req, res) => {
     process.category(req, res)
 })
 
