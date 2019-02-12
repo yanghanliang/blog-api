@@ -73,6 +73,11 @@ router.get('/during/:updatetime', (req, res) => {
 router.get('/catalog', (req, res) => {
     process.catalog(req, res)
 })
+
+// 添加文章评论
+router.post('/addComment', (req, res) => {
+    process.addComment(req, res, req.body)
+})
 // 文章-end
 
 

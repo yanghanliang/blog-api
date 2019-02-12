@@ -62,13 +62,18 @@ create table if not exists article(
 ```sql
 create table if not exists comment(
 	`id` INT NOT NULL auto_increment PRIMARY KEY,
-	`type` VARCHAR(30) NOT NULL COMMENT '类型',
-	`time` TIMESTAMP COMMENT '评论的时间',
-	`head_portrait` varchar(50) COMMENT '头像',
-	`content` text NOT NULL COMMENT '评论的内容',
-	`alias` varchar(25) NOT NULL DEFAULT 'xx' COMMENT '别名'
+	`article_id` INT NOT NULL COMMENT '文章id',
+	`comment_id` INT NOT NULL DEFAULT '0' COMMENT '评论id',
+	`alias` VARCHAR(20) NOT NULL DEFAULT '游客' COMMENT '昵称',
+	`mailbox` VARCHAR(50) COMMENT '邮箱',
+	`time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '评论的时间',
+	`comment_content` text NOT NULL COMMENT '评论的内容'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
+
+```txt
+ JSON我相信大家都已经很熟悉了，但在 MySQL中，直至 5.7 版本中，才正式引入 JSON数据类型。在次之前，我们通常使varchar或text数据类型存储JSON格式数据。
+ ```
 
 ##
 
