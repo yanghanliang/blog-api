@@ -619,19 +619,63 @@ module.exports.catalog = (req, res) => {
 
 // 添加文章评论
 module.exports.addComment = (req, res, data) => {
-    const article_id = data.article_id
+    const article_id = data.articleId
           alias = data.alias,
           mailbox = data.mailbox,
           comment_content = data.comment_content
 
     const sql = `INSERT INTO comment(article_id, alias, ${mailbox ? mailbox+',' : ''} comment_content)
     VALUES(${article_id}, '${alias}', ${mailbox ? "'"+mailbox+"'," : ''} '${comment_content}')`
-    
+
     connect.query(sql, (error, result, fields) => {
         if (error) throw error
         res.send({
             status: 200,
             msg: '添加成功~'
         })
+    })
+}
+
+// 获取文章评论数据
+module.exports.getArticleCommentData = (req, res) => {
+    const articleId = req.params.articleId // 获取文章id
+    const sql = `SELECT * FROM comment WHERE article_id = ${articleId}`
+    connect.query(sql, (error, result, fields) => {
+        if (error) throw error
+        if (result.length > 0) {
+            var dataStructure = function(sourceData) {
+                var data = [],
+                    tempData = []
+                // 先拆分
+                for(var i = 0; i < sourceData.length; i++) {
+                    if (sourceData[i].comment_id === 0) {
+                        data.push([sourceData[i]])
+                    } else {
+                        tempData.push(sourceData[i])
+                    }
+                }
+    
+                // 拼凑数据结构
+                var assemble = function(data, tempData) {
+                    for(var i = 0; i < data.length; i++) {
+                        var arr2 = data[i]
+                        var length = arr2.length
+                        for(var j = 0; j < arr2.length; j++) {
+                            for(var y = 0; y < tempData.length; y++) {
+                                if (arr2[j].id === tempData[y].comment_id) {
+                                    arr2.push(tempData[y])
+                                }
+                            }
+                        }
+                    }
+                }
+                assemble(data, tempData)
+                return data
+            }
+    
+            res.send({
+                "data": dataStructure(result)
+            })
+        }
     })
 }

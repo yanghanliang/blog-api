@@ -73,11 +73,6 @@ router.get('/during/:updatetime', (req, res) => {
 router.get('/catalog', (req, res) => {
     process.catalog(req, res)
 })
-
-// 添加文章评论
-router.post('/addComment', (req, res) => {
-    process.addComment(req, res, req.body)
-})
 // 文章-end
 
 
@@ -107,6 +102,19 @@ router.delete('/deleteCategory/:categoryId', (req, res) => {
     process.deleteCategory(req, res)
 })
 // 分类-end
+
+// 评论->comment-start
+// 添加文章评论
+router.post('/addComment', (req, res) => {
+    process.addComment(req, res, req.body)
+})
+
+// 获取文章评论数据
+router.get('/comment/:articleId', (req, res) => {
+    process.getArticleCommentData(req, res)
+})
+// comment-end
+
 
 router.get('/testData', (req, res) => {
     process.testData(req, res)
