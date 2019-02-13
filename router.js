@@ -113,6 +113,11 @@ router.post('/addComment', (req, res) => {
 router.get('/comment/:articleId', (req, res) => {
     process.getArticleCommentData(req, res)
 })
+
+// 回复文章评论
+router.post('/addReply', (req, res) => {
+    process.addReply(req, res, req.body)
+})
 // comment-end
 
 

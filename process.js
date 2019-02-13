@@ -619,14 +619,13 @@ module.exports.catalog = (req, res) => {
 
 // 添加文章评论
 module.exports.addComment = (req, res, data) => {
-    const article_id = data.articleId
-          alias = data.alias,
+    const alias = data.alias,
           mailbox = data.mailbox,
+          article_id = data.article_id,
           comment_content = data.comment_content
 
-    const sql = `INSERT INTO comment(article_id, alias, ${mailbox ? mailbox+',' : ''} comment_content)
+    const sql = `INSERT INTO comment(article_id, alias, ${mailbox ? 'mailbox,' : ''} comment_content)
     VALUES(${article_id}, '${alias}', ${mailbox ? "'"+mailbox+"'," : ''} '${comment_content}')`
-
     connect.query(sql, (error, result, fields) => {
         if (error) throw error
         res.send({
@@ -639,7 +638,7 @@ module.exports.addComment = (req, res, data) => {
 // 获取文章评论数据
 module.exports.getArticleCommentData = (req, res) => {
     const articleId = req.params.articleId // 获取文章id
-    const sql = `SELECT * FROM comment WHERE article_id = ${articleId}`
+    const sql = `SELECT * FROM comment WHERE article_id = ${articleId} ORDER BY time DESC`
     connect.query(sql, (error, result, fields) => {
         if (error) throw error
         if (result.length > 0) {
@@ -677,5 +676,24 @@ module.exports.getArticleCommentData = (req, res) => {
                 "data": dataStructure(result)
             })
         }
+    })
+}
+
+// 回复文章评论
+module.exports.addReply = (req, res, data) => {
+    const alias = data.alias,
+          mailbox = data.mailbox,
+          comment_id = data.comment_id,
+          article_id = data.article_id,
+          comment_content = data.comment_content
+    const sql = `INSERT INTO comment(article_id, alias, ${mailbox ? 'mailbox,' : ''} comment_content, comment_id)
+    VALUES(${article_id}, '${alias}', ${mailbox ? "'"+mailbox+"'," : ''} '${comment_content}', ${comment_id})`
+
+    connect.query(sql, (error, result, fields) => {
+        if (error) throw error
+        res.send({
+            status: 200,
+            msg: 'ok!'
+        })
     })
 }
