@@ -673,7 +673,13 @@ module.exports.getArticleCommentData = (req, res) => {
             }
     
             res.send({
-                "data": dataStructure(result)
+                status: 200,
+                data: dataStructure(result)
+            })
+        } else {
+            res.send({
+                status: 201,
+                msg: '暂无评论~'
             })
         }
     })

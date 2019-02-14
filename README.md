@@ -75,7 +75,7 @@ create table if not exists comment(
  JSON我相信大家都已经很熟悉了，但在 MySQL中，直至 5.7 版本中，才正式引入 JSON数据类型。在次之前，我们通常使varchar或text数据类型存储JSON格式数据。
  ```
 
-##
+---
 
 // 解决异步操作（以前忘记写了
 const async = require('async')
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `category` (
 ```
 
 
-## articleList-api
+> articleList-api
 mysql 连表查询,取一个表的所有数据和取另一个表的某个字段
 
 ```sql
@@ -136,7 +136,18 @@ create table if not exists note(
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
 
+## 评论用户表
 
+```sql
+create table if not exists comment_user(
+	`id` smallint(6) NOT NULL auto_increment primary key,
+	`ip` varchar(12) NOT NULL COMMENT 'ip地址',
+	`user_head_portrait` text COMMENT '用户头像',
+	`alias` VARCHAR(20) NOT NULL DEFAULT '游客' COMMENT '昵称',
+	`mailbox` VARCHAR(50) COMMENT '邮箱',
+)
+
+```
 
 if(error) {
 	console.log(error)
