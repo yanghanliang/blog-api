@@ -28,6 +28,9 @@ app.use(bodyParser.json())
 // res.header('Access-Control-Allow-Headers', 'application/x-www-form-urlencoded')
 app.use(bodyParser.urlencoded({ extended: false }))
 
+// 访问静态文件（图片
+app.use('/user_head_portrait',express.static('user_head_portrait'))
+
 // 使用路由
 app.use(router)
 

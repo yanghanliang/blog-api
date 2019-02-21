@@ -121,6 +121,10 @@ router.post('/addReply', (req, res) => {
 // comment-end
 
 
+router.post('/pictureUpload', (req, res) => {
+    process.pictureUpload(req, res, req.body)
+})
+
 router.get('/testData', (req, res) => {
     process.testData(req, res)
 })

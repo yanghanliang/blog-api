@@ -7,6 +7,9 @@ const jwt = require('jsonwebtoken')
 // 解决异步操作
 const async = require('async')
 
+var formidable = require('formidable');
+var fs = require("fs");
+
 // 访问首页
 module.exports.getIndex = (req, res) => {
     // 获取文章的数据
@@ -700,6 +703,33 @@ module.exports.addReply = (req, res, data) => {
         res.send({
             status: 200,
             msg: 'ok!'
+        })
+    })
+}
+
+// 图片上传
+module.exports.pictureUpload = (req, res) => {
+    var form = new formidable.IncomingForm()
+    //设置文件上传存放地址
+    form.uploadDir = "./user_head_portrait"
+    // 保留图片的扩展名
+    form.keepExtensions = true
+    //执行里面的回调函数的时候，表单已经全部接收完毕了。
+    form.parse(req, function(err, fields, files) {
+        // console.log("files:",files)  //这里能获取到图片的信息
+        // console.log("fields:",fields) //这里能获取到传的参数的信息，如上面的message参数，可以通过fields。message来得到 
+        // console.log("path:", files.file.path) // 获取图片路径
+        const commentId = fields.commentId,
+              head_portrait_url = files.file.path.replace(/[\\]/g, '//')
+        
+        const sql = `UPDATE comment SET head_portrait_url='${head_portrait_url}' WHERE comment_id=${commentId} `
+
+        connect.query(sql, (error, result, fields) => {
+            if (error) throw error
+            res.send({
+                status: 200,
+                head_portrait_url: head_portrait_url
+            })
         })
     })
 }

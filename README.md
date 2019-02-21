@@ -67,7 +67,8 @@ create table if not exists comment(
 	`alias` VARCHAR(20) NOT NULL DEFAULT '游客' COMMENT '昵称',
 	`mailbox` VARCHAR(50) COMMENT '邮箱',
 	`time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '评论的时间',
-	`comment_content` text NOT NULL COMMENT '评论的内容'
+	`comment_content` text NOT NULL COMMENT '评论的内容',
+	`head_portrait_url` VARCHAR(100) NOT NULL DEFAULT 'http://localhost:3001/user_head_portrait/test.jpeg' COMMENT '头像路径'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
 
