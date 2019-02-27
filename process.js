@@ -16,7 +16,7 @@ module.exports.getIndex = (req, res) => {
     const article =  function(callback) {
         const sql = `SELECT a.*,c.classname FROM
         article AS a LEFT OUTER JOIN category AS c
-        ON a.category_id = c.id ORDER BY updatetime DESC LIMIT 0,5`
+        ON a.category_id = c.id ORDER BY createtime DESC LIMIT 0,5`
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
     
@@ -292,7 +292,7 @@ module.exports.searchData = (req, res, data) => {
 
 // 文章分页
 module.exports.paging = (req, res, data) => {
-    const sortField = data.sortField ? data.sortField : 'updatetime', // 获取排序的字段(默认以更新时间排序)
+    const sortField = data.sortField ? data.sortField : 'createtime', // 获取排序的字段(默认以创建时间排序)
           currentNumber = (data.currentPage - 1) * data.pageSize // 当前第几条 = (当前页-1) * 每页条数, // 获取当前页
           pageSize = data.pageSize, // 获取条数
           orderBy = data.orderBy === 'descending' ? 'desc' : 'asc', // 获取排序的方式
@@ -563,11 +563,11 @@ module.exports.recordReadingNumber = (req, res) => {
 
 // 获取上一篇和下一篇文章的 title && id
 module.exports.during = (req, res) => {
-    const updatetime = req.params.updatetime // 获取当前文章的 id
+    const createtime = req.params.createtime // 获取当前文章的 id
     const preArticle = (callback) => { // 上一篇
         const sql = `SELECT title, id FROM article
-        WHERE updatetime > ${updatetime}
-        ORDER BY updatetime
+        WHERE createtime > ${createtime}
+        ORDER BY createtime
         LIMIT 1`
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
@@ -581,8 +581,8 @@ module.exports.during = (req, res) => {
 
     const nextArticle = (callback) => { // 下一篇
         const sql = `SELECT title, id FROM article
-        WHERE updatetime < ${updatetime}
-        ORDER BY updatetime desc
+        WHERE createtime < ${createtime}
+        ORDER BY createtime desc
         LIMIT 1`
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
@@ -719,7 +719,7 @@ module.exports.pictureUpload = (req, res) => {
         // console.log("files:",files)  //这里能获取到图片的信息
         // console.log("fields:",fields) //这里能获取到传的参数的信息，如上面的message参数，可以通过fields。message来得到 
         // console.log("path:", files.file.path) // 获取图片路径
-        if (files.file.size/1024/1024 > 1) {
+        if (files.file.size/1024/1024 > 1 || files.file === undefined) {
             res.send({
                 status: 201,
                 msg: '上传头像图片大小不能超过 1MB!'
