@@ -7,8 +7,12 @@ const jwt = require('jsonwebtoken')
 // 解决异步操作
 const async = require('async')
 
+// 处理图片上传
 var formidable = require('formidable');
-var fs = require("fs");
+
+// 时间格式转换
+var time = require('./myPlugins/dateFormat.js')
+
 
 // 访问首页
 module.exports.getIndex = (req, res) => {
@@ -649,13 +653,15 @@ module.exports.getArticleCommentData = (req, res) => {
             var dataStructure = function(sourceData) {
                 var data = [],
                     tempData = []
-                // 先拆分
+                // 先拆分(区分发布评论和回复)
                 for(var i = 0; i < sourceData.length; i++) {
                     if (sourceData[i].comment_id === 0) {
                         data.push([sourceData[i]])
                     } else {
                         tempData.push(sourceData[i])
                     }
+                    // 时间格式转换
+                    sourceData[i].time = time.dateFormat(sourceData[i].time)
                 }
     
                 // 拼凑数据结构
