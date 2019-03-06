@@ -624,11 +624,12 @@ module.exports.catalog = (req, res) => {
 module.exports.addComment = (req, res, data) => {
     const alias = data.alias,
           mailbox = data.mailbox,
+          password = data.password,
           article_id = data.article_id,
           comment_content = data.comment_content
 
-    const sql = `INSERT INTO comment(article_id, alias, ${mailbox ? 'mailbox,' : ''} comment_content)
-    VALUES(${article_id}, '${alias}', ${mailbox ? "'"+mailbox+"'," : ''} '${comment_content}')`
+    const sql = `INSERT INTO comment(article_id, alias, ${mailbox ? 'mailbox,' : ''} password, comment_content)
+    VALUES(${article_id}, '${alias}', ${mailbox ? "'"+mailbox+"'," : ''} '${password}', '${comment_content}')`
     connect.query(sql, (error, result, fields) => {
         if (error) throw error
         res.send({
@@ -692,11 +693,12 @@ module.exports.getArticleCommentData = (req, res) => {
 module.exports.addReply = (req, res, data) => {
     const alias = data.alias,
           mailbox = data.mailbox,
+          password = data.password,
           comment_id = data.comment_id,
           article_id = data.article_id,
           comment_content = data.comment_content
-    const sql = `INSERT INTO comment(article_id, alias, ${mailbox ? 'mailbox,' : ''} comment_content, comment_id)
-    VALUES(${article_id}, '${alias}', ${mailbox ? "'"+mailbox+"'," : ''} '${comment_content}', ${comment_id})`
+    const sql = `INSERT INTO comment(article_id, alias, ${mailbox ? 'mailbox,' : ''} password, comment_content, comment_id)
+    VALUES(${article_id}, '${alias}', ${mailbox ? "'"+mailbox+"'," : ''} '${password}', '${comment_content}', ${comment_id})`
 
     connect.query(sql, (error, result, fields) => {
         if (error) throw error
@@ -707,36 +709,122 @@ module.exports.addReply = (req, res, data) => {
     })
 }
 
-// 图片上传
-module.exports.pictureUpload = (req, res) => {
+// 获取文章评论数据
+module.exports.getCommentData = (req, res) => {
+    const id = req.params.id
+    const sql = `SELECT head_portrait_url, alias, mailbox, comment_content FROM comment WHERE id=${id}`
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        if (results.length === 1) {
+            res.send({
+                status: 200,
+                data: results
+            })
+        }
+    })
+}
+
+// 验证评论用户的身份(密码)
+module.exports.verifyPassword = (req, res, data) => {
+    const id = data.id,
+          password = data.password
+    const sql = `SELECT * FROM comment WHERE id = ${id} AND password = '${password}'`
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        if (results.length === 1) {
+            res.send(true)
+        } else {
+            res.send(false)
+        }
+    })
+}
+
+// 验证昵称是否存在
+module.exports.aliasValidation = (req, res) => {
+    const alias = req.params.alias
+    const sql = `SELECT * FROM comment WHERE alias = '${alias}'`
+
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        if (results.length > 0) {
+            res.send({
+                status: false, // 昵称存在，需要验证密码
+                id: results[0].id
+            })
+        } else {
+            res.send({
+                status: true // 昵称可用
+            })
+        }
+    })
+}
+
+// 修改评论信息
+module.exports.modifyCommentInformation = (req, res) => {
     var form = new formidable.IncomingForm()
     //设置文件上传存放地址
     form.uploadDir = ".//user_head_portrait"
     // 保留图片的扩展名
     form.keepExtensions = true
+
+    var Fn = function(fields, files) {
+        const id = fields.id,
+              alias = fields.alias,
+              mailbox = fields.mailbox,
+              comment_content = fields.comment_content
+              name_used_before = fields.name_used_before
+
+        const head_portrait_url = files.file === undefined ? false : files.file.path.replace(/[\\]/g, '\/\/')
+
+        // Modify comment information 修改评论信息 mci
+        var mci = function(callback) {
+            const sql = `UPDATE comment SET comment_content='${comment_content}' WHERE id=${id} `
+
+            connect.query(sql, (error, result, fields) => {
+                if (error) throw error
+                callback(null, { status: 200, head_portrait_url: head_portrait_url })
+            })
+        }
+
+        // Modify the user's Avatar 修改用户头像 mtua
+        var mtua = function(callback) {
+            let sql = ''
+            if (head_portrait_url) {
+                sql = `UPDATE comment SET head_portrait_url='${head_portrait_url}', alias='${alias}', mailbox='${mailbox}' WHERE alias='${name_used_before}'`
+            } else {
+                sql = `UPDATE comment SET alias='${alias}', mailbox='${mailbox}' WHERE alias='${name_used_before}'`
+            }
+            connect.query(sql, (error, result, fields) => {
+                if (error) throw error
+                callback(null)
+            })
+        }
+    
+        // 并行执行,但保证了 results 的结果是正确的
+        async.parallel({mci, mtua}, function(error, results) {
+            if(error) throw error
+
+            // 返回数据
+            res.send(results)
+        })
+    }
     //执行里面的回调函数的时候，表单已经全部接收完毕了。
     form.parse(req, function(err, fields, files) {
-        // console.log("files:",files)  //这里能获取到图片的信息
-        // console.log("fields:",fields) //这里能获取到传的参数的信息，如上面的message参数，可以通过fields。message来得到 
-        // console.log("path:", files.file.path) // 获取图片路径
+            // console.log("files:",files)  // 这里能获取到图片的信息
+            // console.log("fields:",fields) // 这里能获取到传的参数的信息，如上面的message参数，可以通过fields。message来得到 
+            // console.log("path:", files.file.path) // 获取图片路径
+        if (files.file === undefined) {
+            Fn(fields, files)
+            return false
+        }
+
         if (files.file.size/1024/1024 > 1 || files.file === undefined) {
             res.send({
                 status: 201,
                 msg: '上传头像图片大小不能超过 1MB!'
             })
         } else if (files.file.type.indexOf('image') !== -1) {
-            const commentId = fields.commentId,
-            head_portrait_url = files.file.path.replace(/[\\]/g, '\/\/')
-        
-            const sql = `UPDATE comment SET head_portrait_url='${head_portrait_url}' WHERE comment_id=${commentId} `
-
-            connect.query(sql, (error, result, fields) => {
-                if (error) throw error
-                res.send({
-                    status: 200,
-                    head_portrait_url: head_portrait_url
-                })
-            })
+            Fn(fields, files)
         } else {
             res.send({
                 status: 201,
