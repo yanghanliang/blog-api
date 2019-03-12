@@ -57,15 +57,30 @@ module.exports.getIndex = (req, res) => {
 
 // 登录验证
 module.exports.login = (req, res, data) => {
-    const sql = "SELECT * FROM user WHERE username='"+ data.username +"' and password='" + data.password +"'"
+    const username = data.username,
+          password = data.password
+    const sql = "SELECT * FROM user WHERE username='"+ username +"' and password='" + password +"'"
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
 
         if(results.length === 1) {
+            // // Token 数据
+            // const payload = {
+            //     name: data.username,
+            //     password: data.password
+            // }
+
+            // // 密钥
+            // const secret = 'YANGHANLIANG'
+
+            // // 签发 Token
+            // const token = jwt.sign(payload, secret, {
+            //     expiresIn: '1day'
+            // })
             // Token 数据
             const payload = {
-                name: data.username,
-                password: data.password
+                name: username,
+                admin: true
             }
 
             // 密钥

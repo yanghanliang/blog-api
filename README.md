@@ -304,3 +304,30 @@ const sql = `SELECT title, a.id FROM
         LIMIT 1`
 
 ```
+
+
+## token 验证
+
+前端在请求头中添加了 `Authorization` 那么必须在后端的 app.js 中修改跨域处理的地方
+
+```js
+// 提供跨域(curs)
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With,Content-Type,Accept,Authorization,token") // 特别注意这里 `Authorization`
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    res.header('Access-Control-Allow-Credentials','true')
+    next()
+};
+// 使用跨域设置
+app.use(allowCrossDomain)
+```
+
+如果
+```js
+res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With,Content-Type,Accept,Authorization,token") // 特别注意这里 `Authorization`
+```
+
++ 进行 `token` 验证时里面没有 `Authorization` 则会报跨域错误
++ 进行数据提交时，`Content-Type` 必须有，没有则会报跨域错误
+

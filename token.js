@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 // Token 数据
 const payload = {
-    name: 'wanghao',
+    name: 'yanghanliang',
     admin: true
 }
 
@@ -11,7 +11,7 @@ const secret = 'YANGHANLIANG'
 
 // 签发 Token
 const token = jwt.sign(payload, secret, {
-    expiresIn: '1day'
+    expiresIn: '60'
 })
 
 // 验证 Token
