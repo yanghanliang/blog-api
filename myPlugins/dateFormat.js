@@ -5,12 +5,12 @@ var month = day * 30
 
 // 把年月日时间转化成刚刚，几分钟前，几小时前，几天前
 function getDate(dateTimeStamp) {
-    if (dateTimeStamp == undefined) {
+    if (!dateTimeStamp) {
         return false
     } else {
         dateTimeStamp = dateTimeStamp.replace(/\-/g, "/")
-        var sTime = new Date(dateTimeStamp).getTime() //把时间pretime的值转为时间戳
-        var now = new Date().getTime() //获取当前时间的时间戳
+        var sTime = new Date(dateTimeStamp).getTime() // 把时间 pretime 的值转为时间戳
+        var now = new Date().getTime() // 获取当前时间的时间戳
         var diffValue = now - sTime
         var monthC = diffValue / month
         var weekC = diffValue / (7 * day)
