@@ -331,3 +331,14 @@ res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With,Content-Type
 + 进行 `token` 验证时里面没有 `Authorization` 则会报跨域错误
 + 进行数据提交时，`Content-Type` 必须有，没有则会报跨域错误
 
+
+### SQL 语句
+
+> 求一个表中两个字段的和
+
+```
+
+select sum(praise) + sum(`read`) FROM article
+
+```
+

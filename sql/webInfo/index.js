@@ -3,27 +3,79 @@
  */
 
 // 导入自定义操作数据库的方法
-const connect = require('./database.js')
+const connect = require('../../database.js')
+
+// 解决异步操作
+const async = require('async')
 
 // 网站信息
 module.exports.getIndex = (req, res) => {
-    const sql = `SELECT a.*,c.classname FROM
-    article AS a LEFT OUTER JOIN category AS c
-    ON a.category_id = c.id
-    WHERE a.id= ${id}`
+    const date = req.query.date
+    let start_date = new Date(date[0]).getTime()
+    let end_date = new Date(date[1]).getTime()
+    console.log(req.params, '--', req.query, '??')
+    // 获取点赞数和阅读数
+    const sql_article = function(callback) {
+        const sql = `select sum(praise), sum(\`read\`) FROM article where createtime > ${start_date} and createtime < ${end_date}`
+        connect.query(sql, function(error, results, fields) {
+            if(error) throw error
 
-    connect.query(sql, function(error, results, fields) {
+            if(results.length >= 1) { // 判断是否有数据
+                // console.log(results, '获取点赞数和阅读数')
+                callback(null, results)
+            } else {
+                callback(null, { msg: '没有数据' })
+            }
+        })
+    }
+
+    // 获取评论数（不包括回复）
+    const sql_comment = function(callback) {
+        const sql = 'select count(id) FROM comment WHERE comment_id = 0 '
+        connect.query(sql, function(error, results, fields) {
+            if(error) throw error
+
+            if(results.length >= 1) { // 判断是否有数据
+                // console.log(results, '获取评论数（不包括回复）')
+                callback(null, results)
+            } else {
+                callback(null, { msg: '没有数据' })
+            }
+        })
+    }
+
+    // 获取用户数
+    const sql_user = function(callback) {
+        const sql = 'select count(id) FROM user'
+        connect.query(sql, function(error, results, fields) {
+            if(error) throw error
+
+            if(results.length >= 1) { // 判断是否有数据
+                // console.log(results, '获取用户数')
+                callback(null, results)
+            } else {
+                callback(null, { msg: '没有数据' })
+            }
+        })
+    }
+
+
+    // 并行执行,但保证了 results 的结果是正确的
+    async.parallel({sql_article, sql_comment, sql_user}, function(error, results) {
         if(error) throw error
-
-        if(results.length >= 1) {
-            // 返回数据
-            res.send(results)
-        } else {
-            // 返回数据
-            res.json({
-                status: 401,
-                msg: '暂无数据'
-            })
-        }
+        let data = {}
+        const article_data = results.sql_article[0]
+        const comment_data = results.sql_comment[0]
+        const user_data = results.sql_user[0]
+        data.praise = article_data['sum(praise)']
+        data.read =  article_data['sum(`read`)']
+        data.comment = comment_data['count(id)']
+        data.user = user_data['count(id)']
+       
+        // 返回数据
+        res.send({
+            status: 200,
+            data: data
+        })
     })
 }
