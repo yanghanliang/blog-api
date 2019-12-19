@@ -46,7 +46,9 @@ create table if not exists article(
   	`read` int(11) NOT NULL DEFAULT '0' COMMENT '阅读数',
   	`praise` int(11) NOT NULL DEFAULT '0' COMMENT '点赞',
 	`original` int(1) NOT NULL DEFAULT '0' COMMENT '原创0,转载1',
-	`content` text NOT NULL COMMENT '文章内容'
+	`content` text NOT NULL COMMENT '文章内容',
+	`praise_time` timestamp COMMENT '点赞时间',
+	`read_time` timestamp COMMENT '阅读时间'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
 
@@ -149,12 +151,15 @@ create table if not exists note(
 ## 评论用户表
 
 ```sql
+
 create table if not exists comment_user(
 	`id` smallint(6) NOT NULL auto_increment primary key,
 	`ip` varchar(12) NOT NULL COMMENT 'ip地址',
 	`user_head_portrait` text COMMENT '用户头像',
 	`alias` VARCHAR(20) NOT NULL DEFAULT '游客' COMMENT '昵称',
 	`mailbox` VARCHAR(50) COMMENT '邮箱',
+	`createtime` bigint(13) NOT NULL COMMENT '创建时间',
+	`updatetime` bigint(13) COMMENT '更新时间'
 )
 
 ```
@@ -336,9 +341,19 @@ res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With,Content-Type
 
 > 求一个表中两个字段的和
 
+```sql
+
+SELECT SUM(praise) + SUM(`read`) FROM article
+
 ```
 
-select sum(praise) + sum(`read`) FROM article
+---
+
+> 查询某个字段某段时间内的值
+
+```sql
+
+SELECT COUNT(id) FROM comment WHERE time BETWEEN '2019-03-06 16:43:10' AND '2019-03-13 07:18:15'
 
 ```
 

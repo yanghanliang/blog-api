@@ -35,7 +35,10 @@ function getDate(dateTimeStamp) {
 
 }
 
-// 解决nodejs中json序列化时Date类型默认为UTC格式
+/**
+ * 解决nodejs中json序列化时Date类型默认为UTC格式
+ * @param {object}           date // new Data('2019-01-02')
+ */
 function dateFormat(date, fmt) {
     fmt = fmt ? fmt : 'yyyy-MM-dd hh:mm:ss'
     if (null == date || undefined == date) return '';

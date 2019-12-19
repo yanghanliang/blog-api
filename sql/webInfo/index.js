@@ -31,7 +31,7 @@ module.exports.getIndex = (req, res) => {
 
     // 获取评论数（不包括回复）
     const sql_comment = function(callback) {
-        const sql = 'select count(id) FROM comment WHERE comment_id = 0 '
+        const sql = 'select count(id) FROM comment WHERE comment_id = 0'
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
 
@@ -58,7 +58,6 @@ module.exports.getIndex = (req, res) => {
             }
         })
     }
-
 
     // 并行执行,但保证了 results 的结果是正确的
     async.parallel({sql_article, sql_comment, sql_user}, function(error, results) {
