@@ -31,8 +31,9 @@ app.use(bodyParser.json())
 // res.header('Access-Control-Allow-Headers', 'application/x-www-form-urlencoded')
 app.use(bodyParser.urlencoded({ extended: false }))
 
-// 访问静态文件（图片
-app.use('/user_head_portrait', express.static('user_head_portrait'))
+// 访问静态文件（图片,如果不设置的话，就找不到图片
+app.use('/head_portrait_url', express.static('head_portrait_url'))
+app.use('/uploadFileURl', express.static('uploadFileURl'))
 
 // 登陆验证
 app.use((req, res, next) => {
