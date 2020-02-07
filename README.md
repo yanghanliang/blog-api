@@ -16,15 +16,15 @@
 ```sql
 create table if not exists user(
 	`id` int NOT NULL auto_increment primary key,
-	`username` varchar(25) NOT NULL COMMENT '用户名',
+	`username` varchar(25) COMMENT '用户名',
 	`password` varchar(32) NOT NULL COMMENT '密码',
-	`name` varchar(25) NOT NULL COMMENT '姓名',
+	`name` varchar(25) COMMENT '姓名',
 	`alias` varchar(25) NOT NULL DEFAULT 'yanghanliang' COMMENT '别名',
 	`tel` char(11) COMMENT '电话',
-	`background_wall` varchar(50) NOT NULL COMMENT '背景墙',
-	`head_portrait` varchar(50) NOT NULL COMMENT '头像',
-	`occupation` varchar(20) NOT NULL DEFAULT 'WEB开发工程师' COMMENT '职业',
-	`synopsis` varchar(255) NOT NULL COMMENT '简介'
+	`background_wall` varchar(50) COMMENT '背景墙',
+	`head_portrait` varchar(50) COMMENT '头像',
+	`occupation` varchar(20) DEFAULT 'WEB开发工程师' COMMENT '职业',
+	`synopsis` varchar(255) COMMENT '简介'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 
@@ -44,11 +44,12 @@ create table if not exists article(
 	`createtime` bigint(13) NOT NULL COMMENT '创建时间',
 	`updatetime` bigint(13) COMMENT '更新时间',
   	`read` int(11) NOT NULL DEFAULT '0' COMMENT '阅读数',
-  	`praise` int(11) NOT NULL DEFAULT '0' COMMENT '点赞',
+  	`praise` int(11) NOT NULL DEFAULT '0' COMMENT '点赞数',
 	`original` int(1) NOT NULL DEFAULT '0' COMMENT '原创0,转载1',
 	`content` text NOT NULL COMMENT '文章内容',
-	`praise_time` timestamp COMMENT '点赞时间',
-	`read_time` timestamp COMMENT '阅读时间'
+	`reward` int(11) NOT NULL DEFAULT '0' COMMENT '打赏数',
+	`reprint` int(11) NOT NULL DEFAULT '0' COMMENT '转载数',
+	`comment_number` int(11) NOT NULL DEFAULT '0' COMMENT '评论数'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
 

@@ -16,7 +16,7 @@ module.exports.getIndex = (req, res) => {
     console.log(req.params, '--', req.query, '??')
     // 获取点赞数和阅读数
     const sql_article = function(callback) {
-        const sql = `select sum(praise), sum(\`read\`) FROM article where createtime > ${start_date} and createtime < ${end_date}`
+        const sql = `select sum(praise), sum(\`read\`) FROM article`
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
 
@@ -44,32 +44,15 @@ module.exports.getIndex = (req, res) => {
         })
     }
 
-    // 获取用户数
-    const sql_user = function(callback) {
-        const sql = 'select count(id) FROM user'
-        connect.query(sql, function(error, results, fields) {
-            if(error) throw error
-
-            if(results.length >= 1) { // 判断是否有数据
-                // console.log(results, '获取用户数')
-                callback(null, results)
-            } else {
-                callback(null, { msg: '没有数据' })
-            }
-        })
-    }
-
     // 并行执行,但保证了 results 的结果是正确的
     async.parallel({sql_article, sql_comment, sql_user}, function(error, results) {
         if(error) throw error
         let data = {}
         const article_data = results.sql_article[0]
         const comment_data = results.sql_comment[0]
-        const user_data = results.sql_user[0]
         data.praise = article_data['sum(praise)']
         data.read =  article_data['sum(`read`)']
         data.comment = comment_data['count(id)']
-        data.user = user_data['count(id)']
        
         // 返回数据
         res.send({

@@ -181,6 +181,7 @@ module.exports.articleDetails = (req, res) => {
     article AS a LEFT OUTER JOIN category AS c
     ON a.category_id = c.id
     WHERE a.id= ${id}`
+    console.log(sql, 'sql')
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
 
