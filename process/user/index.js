@@ -9,8 +9,9 @@ module.exports.addUser = (req, res) => {
     const data = req.body,
         username = data.userName,
         password = data.password,
+        alias = data.alias
         createtime = new Date().getTime()
-    const sql = `insert into user(alias, password, createtime) values ('${username}', ${password}, ${createtime})`
+    const sql = `insert into user(username, alias, password, createtime) values ('${username}', '${alias}', ${password}, ${createtime})`
     connect.query(sql, (error, results, fields) => {
         if(error) throw error
         res.send({

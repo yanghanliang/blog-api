@@ -59,6 +59,7 @@ module.exports.login = (req, res, data) => {
     const username = data.username,
           password = data.password
     const sql = "SELECT * FROM user WHERE username='"+ username +"' and password='" + password +"'"
+    console.log(sql, 'sql')
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
 
@@ -100,7 +101,7 @@ module.exports.login = (req, res, data) => {
             // 返回数据
             res.json({
                 status: 401,
-                msg: '用户名或密码不正确!'
+                msg: '用户名或密码不正确~'
             })
         }
     })

@@ -16,10 +16,10 @@
 ```sql
 create table if not exists user(
 	`id` int NOT NULL auto_increment primary key,
-	`username` varchar(25) COMMENT '用户名',
+	`username` varchar(25) NOT NULL COMMENT '用户名',
 	`password` varchar(32) NOT NULL COMMENT '密码',
 	`name` varchar(25) COMMENT '姓名',
-	`alias` varchar(25) NOT NULL DEFAULT 'yanghanliang' COMMENT '别名',
+	`alias` varchar(25) COMMENT '别名',
 	`tel` char(11) COMMENT '电话',
 	`background_wall` varchar(50) COMMENT '背景墙',
 	`head_portrait` varchar(50) COMMENT '头像',
