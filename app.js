@@ -42,23 +42,22 @@ app.use((req, res, next) => {
     // 验证 存在 true false 不验证
     // index 不存在 false true 验证
     // 如果是登录或者注册则不需要验证(这里以后可能要做权限控制，需要权限的放在一个文件夹里面，不需要的放在另一个文件夹中)
-    if (!relus) {
-        // 密钥
-        const secret = 'YANGHANLIANG'
-        // 令牌
-        const token = req.headers.authorization
-        // 验证 Token
-        jwt.verify(token, secret, (error, decoded) => {
-            if (error) {
-                console.log({status: 201, msg: '身份验证失败，请登录~', type: 'token'}, '?????')
-                res.send({status: 201, msg: '身份验证失败，请登录~', type: 'token'})
-            } else {
-                next()
-            }
-        })
-    } else {
+    // if (!relus) {
+    //     // 密钥
+    //     const secret = 'YANGHANLIANG'
+    //     // 令牌
+    //     const token = req.headers.authorization
+    //     // 验证 Token
+    //     jwt.verify(token, secret, (error, decoded) => {
+    //         if (error) {
+    //             res.send({status: 201, msg: '身份验证失败，请登录~', type: 'token'})
+    //         } else {
+    //             next()
+    //         }
+    //     })
+    // } else {
         next()
-    }
+    // }
 })
 
 // 使用路由

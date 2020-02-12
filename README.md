@@ -174,8 +174,21 @@ if(error) {
 if (error) throw error
 
 
+---
 
+### 权限表
 
+```sql
+
+create table if not exists jurisdiction(
+	`id` int NOT NULL auto_increment primary key,
+	`j_name` varchar(25) NOT NULL UNIQUE KEY COMMENT '权限名',
+ 	`j_pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
+	`identification` text NOT NULL COMMENT '标识: 用它来判断权限',
+	`is_open` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '是否开启权限:1(开启),0(关闭)'
+)ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+```
 
 
 

@@ -7,9 +7,6 @@ const jwt = require('jsonwebtoken')
 // 解决异步操作
 const async = require('async')
 
-// 处理图片上传
-var formidable = require('formidable');
-
 // 时间格式转换
 var time = require('./myPlugins/dateFormat.js')
 
