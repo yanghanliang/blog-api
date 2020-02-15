@@ -21,7 +21,7 @@ const allowCrossDomain = function(req, res, next) {
     // res.header('Access-Control-Allow-Headers', 'application/x-www-form-urlencoded,Origin,X-Requested-With,Content-Type,Accept,Authorization,token')
     res.header('Access-Control-Allow-Credentials','true')
     next()
-};
+}
 // 使用跨域设置
 app.use(allowCrossDomain)
 

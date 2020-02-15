@@ -12,6 +12,7 @@ const webInfo = require('./webInfo/index.js')
 const uploadFile = require('./uploadFile/index.js')
 const user = require('./user/index.js')
 const jurisdiction = require('./jurisdiction/index')
+const components = require('./components/index')
 
 // 创建路由对象
 var router = express.Router()
@@ -23,6 +24,7 @@ router.use(webInfo)                             // 网站数据
 router.use(uploadFile)                          // 上传文件
 router.use('/user', user)                       // 用户
 router.use('/jurisdiction', jurisdiction)       // 权限
+router.use('/components', components)           // 组件
 
 
 // 调用自定义登录的方法

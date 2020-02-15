@@ -24,7 +24,9 @@ create table if not exists user(
 	`background_wall` varchar(50) COMMENT '背景墙',
 	`head_portrait` varchar(50) COMMENT '头像',
 	`occupation` varchar(20) DEFAULT 'WEB开发工程师' COMMENT '职业',
-	`synopsis` varchar(255) COMMENT '简介'
+	`synopsis` varchar(255) COMMENT '简介',
+	`jurisdiction_id` text COMMENT '权限id,用逗号分割',
+	`role_id` TINYINT NOT NULL DEFAULT 1 COMMENT '角色: 0(管理员), 1(普通用户)'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 
@@ -89,6 +91,23 @@ create table if not exists comment(
  ```
 
 ---
+
+
+### 组件表
+
+```sql
+
+create table if not exists components(
+	`id` int NOT NULL auto_increment primary key,
+	`name` varchar(25) NOT NULL COMMENT '组件名',
+	`content` text COMMENT '内容',
+	`category_id` int COMMENT '分类id'
+)ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+```
+
+---
+
 
 // 解决异步操作（以前忘记写了
 const async = require('async')
@@ -185,7 +204,8 @@ create table if not exists jurisdiction(
 	`j_name` varchar(25) NOT NULL UNIQUE KEY COMMENT '权限名',
  	`j_pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
 	`identification` text NOT NULL COMMENT '标识: 用它来判断权限',
-	`is_open` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '是否开启权限:1(开启),0(关闭)'
+	`is_open` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '是否开启权限:1(开启),0(关闭)',
+	`weight` TINYINT DEFAULT 0 COMMENT '权重：默认为0，意思是默认只有管理员有权限'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 ```

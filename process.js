@@ -56,10 +56,9 @@ module.exports.login = (req, res, data) => {
     const username = data.username,
           password = data.password
     const sql = "SELECT * FROM user WHERE username='"+ username +"' and password='" + password +"'"
-    console.log(sql, 'sql')
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
-
+        console.log(results, 'results???')
         if(results.length === 1) {
             // // Token 数据
             // const payload = {
@@ -92,7 +91,9 @@ module.exports.login = (req, res, data) => {
             res.json({
                 status: 200,
                 msg: '登录成功!',
-                token: token
+                token: token,
+                type: 'token',
+                user: results[0]
             })
         } else {
             // 返回数据
@@ -859,15 +860,12 @@ module.exports.modifyCommentInformation = (req, res) => {
         name_used_before = data.name_used_before,
         head_portrait_url = data.head_portrait_url
 
-    console.log(data, head_portrait_url, '????')
-
     // Modify comment information 修改评论信息 mci
     var mci = function(callback) {
         const sql = `UPDATE comment SET comment_content='${comment_content}' WHERE id=${id} `
 
         connect.query(sql, (error, result, fields) => {
             if (error) throw error
-            console.log(1)
             callback(null, { status: 200, head_portrait_url: head_portrait_url })
         })
     }
@@ -875,7 +873,6 @@ module.exports.modifyCommentInformation = (req, res) => {
     // Modify the user's Avatar 修改用户头像 mtua
     var mtua = function(callback) {
         let sql = ''
-        console.log(head_portrait_url, 'head_portrait_url')
         if (head_portrait_url) {
             sql = `UPDATE comment SET head_portrait_url='${head_portrait_url}', alias='${alias}', mailbox='${mailbox}' WHERE alias='${name_used_before}'`
         } else {
@@ -883,7 +880,6 @@ module.exports.modifyCommentInformation = (req, res) => {
         }
         connect.query(sql, (error, result, fields) => {
             if (error) throw error
-            console.log(2)
             callback(null)
         })
     }
