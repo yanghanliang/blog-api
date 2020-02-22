@@ -22,12 +22,10 @@ module.exports.edit = (req, res) => {
 module.exports.details = (req, res) => {
     const name = req.query.name
     let sql = `SELECT * FROM components WHERE name = '${name}'`
-    console.log(sql, 'sql')
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         if(results.length === 1) {
             results[0].content = results[0].content.replace(/(&apos;)+/g, '\'') // 还原单引号
-            console.log(results, 'results')
             res.send({
                 status: 200,
                 data: results

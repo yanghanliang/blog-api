@@ -109,9 +109,41 @@ create table if not exists components(
 ---
 
 
-// 解决异步操作（以前忘记写了
+### 解决异步操作（以前忘记写了
 const async = require('async')
 https://blog.csdn.net/zzwwjjdj1/article/details/51857959
+
+> waterfall(tasks,[callback]) :瀑布流
+
+```js
+var task1 =function(callback){
+	console.log("task1");
+	callback(null,"11")
+}
+
+var task2 =function(q,callback){
+	console.log("task2");
+	console.log("task1函数传入的值: "+q);
+	callback(null,"22")
+}
+
+var task3 =function(q,callback){
+	console.log("task3");
+	console.log("task2函数传入的值: "+q);
+	callback(null,"33")
+}
+console.time("waterfall方法");
+
+async.waterfall([task1, task2, task3], (error, results) => {
+	if (error) throw error
+	console.log("result : "+result);
+	console.timeEnd("waterfall方法");
+})
+
+```
+
+`版权声明：本文为CSDN博主「意外金喜」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/zzwwjjdj1/article/details/51857959`
 
 ## 转义
 
@@ -205,13 +237,21 @@ create table if not exists jurisdiction(
  	`j_pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
 	`identification` text NOT NULL COMMENT '标识: 用它来判断权限',
 	`is_open` TINYINT(1) NOT NULL DEFAULT '1' COMMENT '是否开启权限:1(开启),0(关闭)',
-	`weight` TINYINT DEFAULT 0 COMMENT '权重：默认为0，意思是默认只有管理员有权限'
+	`weight` TINYINT DEFAULT 0 COMMENT '权重：默认为0，意思是默认只有管理员有权限',
+	`distribution` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0(后端),1(前端页面)'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 ```
 
 
+> 查询一个字段的多个值
 
+```sql
+SELECT * FROM jurisdiction WHERE id in (11, 12, 13, 14)
+```
+```sql
+SELECT * FROM jurisdiction WHERE id = 11 or id = 12 or id = 13
+```
 
 ---
 

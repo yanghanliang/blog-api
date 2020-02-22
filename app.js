@@ -10,6 +10,9 @@ const bodyParser = require('body-parser')
 // 导入签发与验证 JWT 的功能包
 const jwt = require('jsonwebtoken')
 
+// 引入处理方法
+var process = require('./process/user/index.js')
+
 // 创建 app 对象
 const app = express()
 
@@ -35,29 +38,35 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use('/head_portrait_url', express.static('head_portrait_url'))
 app.use('/uploadFileURl', express.static('uploadFileURl'))
 
+// 权限验证
+process.verification(app)
+
 // 登陆验证
 app.use((req, res, next) => {
     const url = req.url.toLocaleLowerCase()
-    let relus = /^\/login$|^\/user\/adduser$|^\/user\/usernamevalidation/.test(url)
+    let rules = new RegExp('^\\/' + app.jurisdictionList.join('|^\\/'))
+    let verification = rules.test(url)
     // 验证 存在 true false 不验证
     // index 不存在 false true 验证
     // 如果是登录或者注册则不需要验证(这里以后可能要做权限控制，需要权限的放在一个文件夹里面，不需要的放在另一个文件夹中)
-    // if (!relus) {
-    //     // 密钥
-    //     const secret = 'YANGHANLIANG'
-    //     // 令牌
-    //     const token = req.headers.authorization
-    //     // 验证 Token
-    //     jwt.verify(token, secret, (error, decoded) => {
-    //         if (error) {
-    //             res.send({status: 201, msg: '身份验证失败，请登录~', type: 'token'})
-    //         } else {
-    //             next()
-    //         }
-    //     })
-    // } else {
+    if (verification) {
+        // console.log(url, 'url')
+        // 密钥
+        const secret = 'YANGHANLIANG'
+        // 令牌
+        const token = req.headers.authorization
+        // 验证 Token
+        jwt.verify(token, secret, (error, decoded) => {
+            // console.log(decoded, 'decoded')
+            if (error) {
+                res.send({status: 201, msg: '身份验证失败，请登录~', type: 'token'})
+            } else {
+                next()
+            }
+        })
+    } else {
         next()
-    // }
+    }
 })
 
 // 使用路由

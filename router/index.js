@@ -29,7 +29,7 @@ router.use('/components', components)           // 组件
 
 // 调用自定义登录的方法
 router.post('/login', (req, res) => {
-    process.login(req, res, req.body) 
+    process.login(req, res, req.body)
 })
 
 // 获取首页需要的数据
