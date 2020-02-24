@@ -92,17 +92,28 @@ module.exports.details = (req, res) => {
 // 修改权限
 module.exports.edit = (req, res) => {
     const data = req.body,
-        name = data.name,
-        identification = data.identification,
-        distribution = data.distribution,
-        pid = data.pid
         id = req.params.id
-    const sql = `UPDATE jurisdiction SET j_name='${name}', identification='${identification}', j_pid=${pid}, distribution=${distribution} WHERE id=${id}`
+    const fieldArr = {
+        j_name: data.name,
+        identification: data.identification,
+        distribution: data.distribution,
+        j_pid: data.pid,
+        is_open: String(data.isOpen)
+    }
+    let str = ''
+    for (const key in fieldArr) {
+        let item = fieldArr[key]
+        if(item) {
+            str += `,${key}='${item}'`
+        }
+    }
+    str = str.slice(1)
+    const sql = `UPDATE jurisdiction SET ${str} WHERE id=${id}`
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send({
             status: 200,
-            msg: '修改成功'
+            msg: '修改成功~'
         })
     })
 }
@@ -111,7 +122,6 @@ module.exports.edit = (req, res) => {
 module.exports.delete = (req, res) => {
     const id = req.params.id
     const sql = `DELETE FROM jurisdiction WHERE id = ${id}`
-    console.log(sql, 'sql')
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send({

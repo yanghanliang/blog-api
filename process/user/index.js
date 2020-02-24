@@ -73,20 +73,6 @@ module.exports.userJurisdiction = (req, res) => {
     const token = req.headers.authorization
     // 获取默认权限
     const getDefalutJurisdiction = function() {
-        // const sql = 'SELECT identification FROM jurisdiction WHERE weight = 0 AND is_open = 1 AND distribution = 1'
-        // connect.query(sql, (error, results, fields) => {
-        //     if (error) throw error
-        //     if(results.length > 0) {
-        //         res.send({
-        //             status: 200,
-        //             data: results.map((item) => {
-        //                 return item.identification
-        //             })
-        //         })
-        //     } else {
-                
-        //     }
-        // })
         res.send({
             status: 201,
             data: []
@@ -95,11 +81,11 @@ module.exports.userJurisdiction = (req, res) => {
     // 验证 Token
     jwt.verify(token, secret, (error, decoded) => {
         if (error) {
-            console.log('cuowu')
             getDefalutJurisdiction()
         } else {
-            const sql = `SELECT identification FROM jurisdiction WHERE id not in (${decoded.jurisdictionId}) AND is_open = 1 AND distribution = 1`
-            console.log(sql, 'sql')
+            const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId : null
+            const sql = `SELECT identification FROM jurisdiction WHERE id not in (${jurisdictionId}) AND is_open = 1 AND distribution = 1`
+            // console.log(sql, 'sql')
             connect.query(sql, (error, results, fields) => {
                 if (error) throw error
                 if(results.length > 0) {
@@ -134,12 +120,14 @@ module.exports.userJurisdictions = (req, res) => {
                 connect.query(sql, (error, results, fields) => {
                     if (error) throw error
                     if(results.length === 1) {
-                        callback(null, results[0].jurisdiction_id)
+                        const jurisdictionId = results[0].jurisdiction_id ? results[0].jurisdiction_id : null
+                        callback(null, jurisdictionId)
                     }
                 })
             }
             let getJurisdictionList = (jurisdictionId, callback) => {
                 const sql = `SELECT * FROM jurisdiction WHERE id IN (${jurisdictionId})`
+                // console.log(sql, 'sql')
                 connect.query(sql, (error, results, fields) => {
                     if (error) throw error
                     if(results.length > 0) {
@@ -226,11 +214,11 @@ module.exports.getNotJurisdiction = (req, res) => {
     // 验证 Token
     jwt.verify(token, secret, (err, decoded) => {
         if (err) throw err
-
-        const sql = `SELECT identification FROM jurisdiction WHERE id not in (${decoded.jurisdictionId}) AND is_open = 1 AND distribution = 1`
-        console.log(sql, 'sql')
+        const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId : null
+        const sql = `SELECT identification FROM jurisdiction WHERE id not in (${jurisdictionId}) AND is_open = 1 AND distribution = 1`
+        // console.log(sql, 'sql')
         connect.query(sql, (error, results, fields) => {
-            console.log('******')
+            // console.log('******')
             if (error) throw error
             if (results.length > 0) {
                 res.send({
