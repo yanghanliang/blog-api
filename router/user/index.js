@@ -32,4 +32,14 @@ router.post('/jurisdictions', (req, res) => {
     process.userJurisdictions(req, res)
 })
 
+// 修改用户权限
+router.put('/jurisdiction/edit', (req, res) => {
+    process.editUserJurisdiction(req, res)
+})
+
+// 获取用户不存且需要验证的路由权限
+router.get('/not/jurisdiction', (req, res) => {
+    process.getNotJurisdiction(req, res)
+})
+
 module.exports = router

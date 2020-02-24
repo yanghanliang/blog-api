@@ -28,7 +28,6 @@ router.put('/edit/:id', (req, res) => {
 })
 
 router.delete('/delete/:id', (req, res) => {
-    console.log(999)
     process.delete(req, res)
 })
 

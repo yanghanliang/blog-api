@@ -7,7 +7,7 @@ const connect = require('../../database.js')
 
 // 权限列表
 module.exports.list = (req, res) => {
-    const sql = 'SELECT * FROM jurisdiction'
+    const sql = 'SELECT * FROM jurisdiction ORDER BY distribution'
 
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
@@ -30,8 +30,9 @@ module.exports.add = (req, res) => {
     const data = req.body,
         name = data.name,
         identification = data.identification,
-        pid = data.pid
-    const sql = `INSERT INTO jurisdiction(j_name, identification, j_pid) VALUES ('${name}', '${identification}', ${pid})`
+        pid = data.pid,
+        distribution = data.distribution
+    const sql = `INSERT INTO jurisdiction(j_name, identification, j_pid, distribution) VALUES ('${name}', '${identification}', ${pid}, '${distribution}')`
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send({
@@ -72,10 +73,8 @@ module.exports.verification = (req, res) => {
 module.exports.details = (req, res) => {
     const id = req.params.id
     let sql = `SELECT * FROM jurisdiction WHERE id = ${id}`
-    console.log(sql, 'sql')
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
-        console.log(results, 'results')
         if(results.length > 0) {
             res.send({
                 status: 200,
@@ -95,9 +94,10 @@ module.exports.edit = (req, res) => {
     const data = req.body,
         name = data.name,
         identification = data.identification,
+        distribution = data.distribution,
         pid = data.pid
         id = req.params.id
-    const sql = `UPDATE jurisdiction SET j_name='${name}', identification='${identification}', j_pid=${pid} WHERE id=${id}`
+    const sql = `UPDATE jurisdiction SET j_name='${name}', identification='${identification}', j_pid=${pid}, distribution=${distribution} WHERE id=${id}`
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send({

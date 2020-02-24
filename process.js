@@ -193,7 +193,10 @@ module.exports.articleList = (req, res) => {
     async.parallel({data, getArticleNumber}, function(error, results) {
         if (error) throw error
         // 返回数据
-        res.send(results)
+        res.send({
+            status: 200,
+            data: results
+        })
     })
 }
 

@@ -8,6 +8,8 @@ const connect = require('../../database.js')
 const jwt = require('jsonwebtoken')
 // 解决异步操作
 const async = require('async')
+// 创建 token
+const myToken = require('../../myPlugins/token')
 
 module.exports.addUser = (req, res) => {
     const data = req.body,
@@ -71,30 +73,33 @@ module.exports.userJurisdiction = (req, res) => {
     const token = req.headers.authorization
     // 获取默认权限
     const getDefalutJurisdiction = function() {
-        const sql = 'SELECT identification FROM jurisdiction WHERE weight = 0 AND is_open = 1 AND distribution = 1'
-        connect.query(sql, (error, results, fields) => {
-            if (error) throw error
-            if(results.length > 0) {
-                res.send({
-                    status: 200,
-                    data: results.map((item) => {
-                        return item.identification
-                    })
-                })
-            } else {
-                res.send({
-                    status: 201,
-                    data: []
-                })
-            }
+        // const sql = 'SELECT identification FROM jurisdiction WHERE weight = 0 AND is_open = 1 AND distribution = 1'
+        // connect.query(sql, (error, results, fields) => {
+        //     if (error) throw error
+        //     if(results.length > 0) {
+        //         res.send({
+        //             status: 200,
+        //             data: results.map((item) => {
+        //                 return item.identification
+        //             })
+        //         })
+        //     } else {
+                
+        //     }
+        // })
+        res.send({
+            status: 201,
+            data: []
         })
     }
     // 验证 Token
     jwt.verify(token, secret, (error, decoded) => {
         if (error) {
+            console.log('cuowu')
             getDefalutJurisdiction()
         } else {
             const sql = `SELECT identification FROM jurisdiction WHERE id not in (${decoded.jurisdictionId}) AND is_open = 1 AND distribution = 1`
+            console.log(sql, 'sql')
             connect.query(sql, (error, results, fields) => {
                 if (error) throw error
                 if(results.length > 0) {
@@ -124,7 +129,6 @@ module.exports.userJurisdictions = (req, res) => {
         if (error) {
             res.send({status: 201, msg: '身份验证失败，请登录~', type: 'token'})
         } else {
-            console.log('这儿？？')
             let getUserJurisdiction = callback => {
                 const sql = `SELECT jurisdiction_id FROM user WHERE username = '${userName}'`
                 connect.query(sql, (error, results, fields) => {
@@ -136,19 +140,21 @@ module.exports.userJurisdictions = (req, res) => {
             }
             let getJurisdictionList = (jurisdictionId, callback) => {
                 const sql = `SELECT * FROM jurisdiction WHERE id IN (${jurisdictionId})`
-                console.log(sql, 'sql')
                 connect.query(sql, (error, results, fields) => {
                     if (error) throw error
-                    console.log(results, 'ssss')
                     if(results.length > 0) {
                         callback(null, results)
+                    } else {
+                        res.send({
+                            status: 200,
+                            data: []
+                        })
                     }
                 })
             }
 
             async.waterfall([getUserJurisdiction, getJurisdictionList], function(error, results) {
                 if (error) throw error
-                console.log(results, 'results')
                 res.send({
                     status: 200,
                     data: results
@@ -168,10 +174,77 @@ module.exports.verification = (app) => {
 
         if(results && results.length > 0) {
             app.jurisdictionList = results.map((item) => {
-                return item.identification
+                item.identification = item.identification.toLocaleLowerCase()
+                return item
+            })
+            app.jurisdictionId= results.map((item) => {
+                return item.id
+            })
+            app.identificationList = results.map((item) => {
+                return item.identification.toLocaleLowerCase()
             })
         } else {
             app.jurisdictionList = []
+            app.jurisdictionId = []
+            app.identificationList = []
         }
+    })
+}
+
+// 修改用户权限
+module.exports.editUserJurisdiction = (req, res) => {
+    const data = req.body,
+        jurisdictionId = data.jurisdictionId,
+        id = data.id
+    const sql = `UPDATE user SET jurisdiction_id='${jurisdictionId}' where id=${id}`
+
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        // 密钥
+        const secret = 'YANGHANLIANG'
+        // 令牌
+        const token = req.headers.authorization
+        // 验证 Token
+        jwt.verify(token, secret, (err, decoded) => {
+            if (err) throw err
+            const newToken = myToken.createdToken(decoded.userName, jurisdictionId)
+            res.send({
+                status: 200,
+                msg: '修改成功',
+                token: newToken
+            })
+        })
+    })
+}
+
+// 获取用户不存在的权限(前端页面路由权限)
+module.exports.getNotJurisdiction = (req, res) => {
+    // 密钥
+    const secret = 'YANGHANLIANG'
+    // 令牌
+    const token = req.headers.authorization
+    // 验证 Token
+    jwt.verify(token, secret, (err, decoded) => {
+        if (err) throw err
+
+        const sql = `SELECT identification FROM jurisdiction WHERE id not in (${decoded.jurisdictionId}) AND is_open = 1 AND distribution = 1`
+        console.log(sql, 'sql')
+        connect.query(sql, (error, results, fields) => {
+            console.log('******')
+            if (error) throw error
+            if (results.length > 0) {
+                res.send({
+                    status: 200,
+                    data: results.map((item) => {
+                        return item.identification
+                    })
+                })
+            } else {
+                res.send({
+                    status: 201,
+                    data: []
+                })
+            }
+        })
     })
 }
