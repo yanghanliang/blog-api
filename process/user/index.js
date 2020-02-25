@@ -73,9 +73,21 @@ module.exports.userJurisdiction = (req, res) => {
     const token = req.headers.authorization
     // 获取默认权限
     const getDefalutJurisdiction = function() {
-        res.send({
-            status: 201,
-            data: []
+        const sql =  `SELECT identification FROM jurisdiction WHERE is_open = 1 AND distribution = 1 AND weight = 0`
+        connect.query(sql, (error, results, fields) => {
+            if (results.length > 0) {
+                res.send({
+                    status: 200,
+                    data: results.map((item) => {
+                        return item.identification
+                    })
+                })
+            } else {
+                res.send({
+                    status: 201,
+                    data: []
+                })
+            }
         })
     }
     // 验证 Token
