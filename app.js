@@ -40,6 +40,12 @@ app.use('/uploadFileURl', express.static('uploadFileURl'))
 
 // 权限验证
 process.verification(app)
+// 操作权限的时候需要更新一下需要验证的权限列表
+app.use(/^\/jurisdiction/, (req, res, next) => {
+    // 权限验证
+    process.verification(app)
+    next()
+})
 
 // 登陆验证
 app.use((req, res, next) => {
@@ -81,7 +87,6 @@ app.use((req, res, next) => {
             }
         })
     } else {
-        console.log('不验证')
         next()
     }
 })

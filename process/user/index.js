@@ -152,7 +152,7 @@ module.exports.userJurisdictions = (req, res) => {
     })
 }
 
-// 获取用户权限(后端-验证需要验证的功能)
+// 获取权限列表(后端-验证需要验证的功能)
 module.exports.verification = (app) => {
     const sql = 'SELECT * FROM jurisdiction WHERE weight = 0 AND is_open = 1 AND distribution = 0'
     connect.query(sql, (error, results, fields) => {
