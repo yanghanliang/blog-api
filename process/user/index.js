@@ -205,7 +205,7 @@ module.exports.editUserJurisdiction = (req, res) => {
     })
 }
 
-// 获取用户不存在的权限(前端页面路由权限)
+// 获取用户不存在且需要验证的权限(前端页面路由权限)
 module.exports.getNotJurisdiction = (req, res) => {
     // 密钥
     const secret = 'YANGHANLIANG'
