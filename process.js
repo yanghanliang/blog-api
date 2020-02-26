@@ -99,8 +99,8 @@ module.exports.login = (req, res, data) => {
 
     // 获取不存在的权限
     const getNotJurisdiction = (params, callback) => {
-        const sql = `SELECT identification FROM jurisdiction WHERE id not in (${params.user.jurisdiction_id}) AND is_open = 1 AND distribution = 1`
-        console.log(sql, 'sql')
+        const jurisdictionId = params.user.jurisdiction_id ? params.user.jurisdiction_id : '\'\''
+        const sql = `SELECT identification FROM jurisdiction WHERE id not in (${jurisdictionId}) AND is_open = 1 AND distribution = 1`
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
             if (results.length > 0) {
