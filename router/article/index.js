@@ -4,8 +4,12 @@
 const express = require('express')
 const router = express.Router()
 
+// 引入新的文章接口
+var article = require('./new')
 // 引入处理方法
 var process = require('../../process.js')
+
+router.use('/article', article)
 
 // 添加文章
 router.post('/addArticle', (req, res) => {
@@ -61,6 +65,5 @@ router.get('/during/:createtime', (req, res) => {
 router.get('/catalog', (req, res) => {
     process.catalog(req, res)
 })
-// 文章-end
 
 module.exports = router

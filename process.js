@@ -299,20 +299,20 @@ module.exports.deleteArticle = (req, res) => {
 // 搜索数据
 module.exports.searchData = (req, res, data) => {
     const getData = (callback) => {
-    const sql = `SELECT a.*,c.classname FROM
-    article AS a LEFT OUTER JOIN category AS c
-    ON a.category_id = c.id
-    WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'
-    ORDER BY updatetime desc
-    LIMIT 0,5`
-    connect.query(sql, function(error, results, fields) {
-        if (error) throw error
+        const sql = `SELECT a.*,c.classname FROM
+            article AS a LEFT OUTER JOIN category AS c
+            ON a.category_id = c.id
+            WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'
+            ORDER BY createtime desc
+            LIMIT 0,5`
+        connect.query(sql, function(error, results, fields) {
+            if (error) throw error
 
-        if (results.length > 0) {
-            callback(null, { status: 200, data: results })
-        } else {
-            callback(null, { msg: '没有找到数据, 主人啥都没写,懒死他了~' })
-        }
+            if (results.length > 0) {
+                callback(null, { status: 200, data: results })
+            } else {
+                callback(null, { msg: '没有找到数据, 主人啥都没写,懒死他了~' })
+            }
         })
     }
 
@@ -324,7 +324,6 @@ module.exports.searchData = (req, res, data) => {
         connect.query(sql, (error, results, fields) => {
             callback(null, results[0]['COUNT(*)'])
     })
-
 }
 
     // 并行执行,但保证了 results 的结果是正确的
@@ -349,8 +348,9 @@ module.exports.paging = (req, res, data) => {
             article AS a LEFT OUTER JOIN category AS c
             ON a.category_id = c.id
             WHERE classname = '${classname}'
-            ORDER BY ${sortField} ${orderBy}
+            ORDER BY updatetime desc
             LIMIT ${currentNumber},${pageSize}`
+
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
             if (results.length > 0) {
@@ -462,6 +462,7 @@ module.exports.articleCategory = (req, res) => {
             WHERE classname = '${classname}'
             ORDER BY updatetime desc
             LIMIT 0, 5`
+        console.log(sql, 'sql1')
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
             if (results.length > 0) {
