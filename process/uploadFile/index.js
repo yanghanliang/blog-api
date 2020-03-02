@@ -1,10 +1,15 @@
 // 处理图片上传
-var formidable = require('formidable')
+let formidable = require('formidable')
+// 引入fs模块
+let fs = require('fs')
+
 
 module.exports.uploadFile = (req, res) => {
-    var form = new formidable.IncomingForm()
+    let form = new formidable()
+    let uploadDir = req.query.uploadDir ? req.query.uploadDir : './uploadFileURl'
+
     //设置文件上传存放地址
-    form.uploadDir = "./uploadFileURl"
+    form.uploadDir = uploadDir
     // 保留图片的扩展名
     form.keepExtensions = true
 
@@ -30,5 +35,17 @@ module.exports.uploadFile = (req, res) => {
                 url: files.file === undefined ? false : files.file.path.replace(/[\\]/g, '/')
             })
         }
+    })
+}
+
+// 删除图片
+module.exports.deleteFile = (req, res) => {
+    const url = req.body.path
+    fs.unlink(url, function(error) {
+        if (error) throw error
+        res.send({
+            status: 200,
+            msg: '删除成功'
+        })
     })
 }

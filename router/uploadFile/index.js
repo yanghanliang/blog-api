@@ -9,7 +9,11 @@ var process = require('../../process/uploadFile/index.js')
 
 // 添加文章评论
 router.post('/uploadFile', (req, res) => {
-    process.uploadFile(req, res, req.body)
+    process.uploadFile(req, res)
+})
+
+router.post('/deleteFile', (req, res) => {
+    process.deleteFile(req, res)
 })
 
 module.exports = router

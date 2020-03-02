@@ -98,7 +98,6 @@ module.exports.userJurisdiction = (req, res) => {
             const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId : null
             const sql = `SELECT identification FROM jurisdiction WHERE id not in (${jurisdictionId}) AND is_open = 1 AND distribution = 1`
             connect.query(sql, (error, results, fields) => {
-                console.log(results, sql)
                 if (error) throw error
                 if(results.length > 0) {
                     res.send({

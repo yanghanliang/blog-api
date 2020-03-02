@@ -16,7 +16,7 @@ module.exports.getIndex = (req, res) => {
     const article =  function(callback) {
         const sql = `SELECT a.*,c.classname FROM
         article AS a LEFT OUTER JOIN category AS c
-        ON a.category_id = c.id ORDER BY createtime DESC LIMIT 0,5`
+        ON a.category_id = c.id ORDER BY createtime DESC LIMIT 0,10`
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
     
