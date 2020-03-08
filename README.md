@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `category` (
   `pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
   `pid_classname` varchar(30) NOT NULL COMMENT '父分类名称',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ```
 
 
@@ -251,6 +251,31 @@ SELECT * FROM jurisdiction WHERE id in (11, 12, 13, 14)
 ```
 ```sql
 SELECT * FROM jurisdiction WHERE id = 11 or id = 12 or id = 13
+```
+
+
+## 书签表
+<!-- ```sql
+CREATE TABLE IF NOT EXISTS `category` (
+  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `classname` varchar(30) NOT NULL COMMENT '分类名称',
+  `pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
+  `pid_classname` varchar(30) NOT NULL COMMENT '父分类名称',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+``` -->
+
+### 网站预览数据表
+
+```sql
+CREATE TABLE IF NOT EXISTS `previewdata` (
+  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `ip` text NOT NULL COMMENT 'ip地址',
+  `last_time` bigint(13) COMMENT '最近一次预览时间',
+  `sum_time` bigint(13) COMMENT '总共预览时间',
+  `user_id` smallint(6) COMMENT '用户id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ```
 
 ---
