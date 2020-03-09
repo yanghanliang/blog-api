@@ -28,7 +28,6 @@ router.use('/jurisdiction', jurisdiction)       // 权限
 router.use('/components', components)           // 组件
 router.use('/echarts', echarts)                 // 图表数据
 
-
 // 调用自定义登录的方法
 router.post('/login', (req, res) => {
     process.login(req, res, req.body)
@@ -41,6 +40,15 @@ router.get('/index', (req, res) => {
 
 router.get('/testData', (req, res) => {
     process.testData(req, res)
+})
+
+router.all('*', (req, res) => {
+    // `Access to XMLHttpRequest at 'http://127.0.0.1:3001/chart/web/is/ip' from origin 'http://localhost:8080' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: It does not have HTTP ok status.`
+    // 有时候报这种跨域问题时因为没有找到对应的路由导致的
+    res.send({
+        status: 404,
+        data: ''
+    })
 })
 
 // 将 router 暴露出去
