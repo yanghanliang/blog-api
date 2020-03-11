@@ -8,7 +8,7 @@ const connect = require('../../database.js')
 // 处理时间的
 const moment = require('moment')
 
-// 网站数据
+// 网站数据(日报表)折线图
 module.exports.webInfo = (req, res) => {
     const data = req.body,
         endDate = moment(data.endTime).add(1, 'days').format('YYYY-MM-DD'), // 包括今天
@@ -85,7 +85,7 @@ module.exports.webInfo = (req, res) => {
         })
     }
 
-    // 文章浏览量
+    // 文章发布量
     const articleViews = (callback) => {
         const sql = `SELECT * FROM article WHERE createtime <= ${endTime} AND createtime >= ${startTime}`
         connect.query(sql, (error, results, fields) => {
@@ -181,6 +181,62 @@ module.exports.updateBrowseUser = (req, res) => {
             status: 200,
             data: results,
             msg: '更新浏览用户的数据'
+        })
+    })
+}
+
+// 文章数据总报表
+module.exports.articleSumReport = (req, res) => {
+    // 文章阅读数、点赞数、原创数、转载数
+    const article = (callback) => {
+        const sql = 'SELECT SUM(`read`),SUM(`praise`),COUNT(IF(`original`=0,TRUE,NULL)),COUNT(IF(`original`=1,TRUE,NULL)) FROM article'
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            if (results.length > 0) {
+                callback(null, Object.values(results[0]))
+            } else {
+                callback(null, [])
+            }
+        })
+    }
+
+    // 评论数(不包括回复数)
+    const comment = (callback) => {
+        const sql = 'SELECT COUNT(IF(`comment_id`=0,TRUE,NULL)) FROM comment'
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            if (results.length > 0) {
+                callback(null, Object.values(results[0]))
+            } else {
+                callback(null, [])
+            }
+        })
+    }
+
+    // 评论总条数
+    const commentSum = (callback) => {
+        const sql = 'SELECT COUNT(*) FROM comment'
+        connect.query(sql, (error, results, fields) => {
+            if (error) throw error
+            if (results.length > 0) {
+                callback(null, Object.values(results[0]))
+            } else {
+                callback(null, [])
+            }
+        })
+    }
+
+    async.parallel([article, comment, commentSum], function (errer, result) {
+        if (errer) throw error
+        let replyNumber = result[2] - result[1]
+        // 阅读数、点赞数、原创数、转载数、评论数、回复数
+        let data = [].concat(result[0], result[1], replyNumber)
+        res.send({
+            status: 200,
+            data: {
+                title: ['阅读数', '点赞数', '原创数', '转载数', '评论数', '回复数'],
+                data: data
+            }
         })
     })
 }

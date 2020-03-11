@@ -7,7 +7,7 @@ const connect = require('../../database.js')
 // 解决异步操作
 const async = require('async')
 
-// 根据关键字和分类进行只能推荐
+// 根据关键字和分类进行智能推荐
 module.exports.recommend = (req, res) => {
     const data = req.body,
         pageSize = data.pageSize,
@@ -52,4 +52,20 @@ module.exports.recommend = (req, res) => {
                 }
             })
         })
+}
+
+// 修改文章点赞数
+module.exports.praise = (req, res) => {
+    const data = req.body,
+        id = data.categoryId,
+        praise = data.praise // 点赞是true,取消点赞是false
+
+    const sql = `UPDATE article SET praise='${praise}' WHERE id = id`
+    connect.query(sql, (error, results, fields) => {
+        if (error) throw error
+        res.send({
+            status: 200,
+            msg: '操作成功~'
+        })
+    })
 }

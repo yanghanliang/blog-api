@@ -27,4 +27,9 @@ router.get('/update/browse/user', (req, res) => {
     process.updateBrowseUser(req, res)
 })
 
+// 文章数据总报表
+router.get('/article/sum/report', (req, res) => {
+    process.articleSumReport(req, res)
+})
+
 module.exports = router

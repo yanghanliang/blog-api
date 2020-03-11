@@ -12,4 +12,9 @@ router.post('/recommend', (req, res) => {
     article.recommend(req, res)
 })
 
+// 修改文章点赞数
+router.post('/praise', (req, res) => {
+    article.praise(req, res)
+})
+
 module.exports = router
