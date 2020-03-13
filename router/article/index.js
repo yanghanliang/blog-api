@@ -16,7 +16,7 @@ router.post('/addArticle', (req, res) => {
     process.addArticle(req, res, req.body)
 })
 
-// 获取文章列表
+// 获取文章列表(后台)
 router.get('/articleList/:sortField/:orderBy/:number', (req, res) => {
     process.articleList(req, res)
 })

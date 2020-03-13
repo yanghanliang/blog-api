@@ -10,47 +10,6 @@ const async = require('async')
 // 时间格式转换
 var time = require('./myPlugins/dateFormat.js')
 
-// 访问首页
-module.exports.getIndex = (req, res) => {
-    // 获取文章的数据
-    const article =  function(callback) {
-        const sql = `SELECT a.*,c.classname FROM
-        article AS a LEFT OUTER JOIN category AS c
-        ON a.category_id = c.id ORDER BY createtime DESC LIMIT 0,10`
-        connect.query(sql, function(error, results, fields) {
-            if(error) throw error
-    
-            if(results.length >= 1) { // 判断是否有数据
-                callback(null, results)
-            } else {
-                callback(null, { msg: '没有数据' })
-            }
-        })
-    }
-
-    // 获取个人信息
-    const personalInformation = function(callback) {
-        const sql = 'SELECT * FROM user'
-        connect.query(sql, function(error, results, fields) {
-            if(error) throw error
-    
-            if(results.length >= 1) { // 判断是否有数据
-                callback(null, results[0])
-            } else {
-                callback(null, { msg: '没有数据' })
-            }
-        })
-    }
-    
-    // 并行执行,但保证了 results 的结果是正确的
-    async.parallel({article, personalInformation}, function(error, results) {
-        if(error) throw error
-
-        // 返回数据
-        res.send(results)
-    })
-}
-
 // 登录验证
 module.exports.login = (req, res, data) => {
     const createToken = (callback) => {
@@ -298,13 +257,16 @@ module.exports.deleteArticle = (req, res) => {
 
 // 搜索数据
 module.exports.searchData = (req, res, data) => {
+    const number = data.number ? data.number : 5,
+        orderBy = data.orderBy ? data.orderBy : 'desc',
+        field = data.field ? data.field : 'createtime'
     const getData = (callback) => {
         const sql = `SELECT a.*,c.classname FROM
             article AS a LEFT OUTER JOIN category AS c
             ON a.category_id = c.id
             WHERE title Like '%${data.searchData}%' or content Like '%${data.searchData}%' or c.classname Like '%${data.searchData}%' or synopsis Like '%${data.searchData}%'
-            ORDER BY createtime desc
-            LIMIT 0,5`
+            ORDER BY ${field} ${orderBy}
+            LIMIT 0,${number}`
         connect.query(sql, function(error, results, fields) {
             if (error) throw error
 

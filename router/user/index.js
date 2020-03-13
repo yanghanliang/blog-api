@@ -42,4 +42,9 @@ router.get('/not/jurisdiction', (req, res) => {
     process.getNotJurisdiction(req, res)
 })
 
+// 获取用户详情
+router.get('/details', (req, res) => {
+    process.details(req, res)
+})
+
 module.exports = router

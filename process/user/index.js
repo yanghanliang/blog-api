@@ -11,6 +11,7 @@ const async = require('async')
 // 创建 token
 const myToken = require('../../myPlugins/token')
 
+// 添加用户
 module.exports.addUser = (req, res) => {
     const data = req.body,
         username = data.userName,
@@ -245,5 +246,25 @@ module.exports.getNotJurisdiction = (req, res) => {
                 })
             }
         })
+    })
+}
+
+// 用户详情
+module.exports.details = (req, res) => {
+    const sql = 'SELECT * FROM user'
+    connect.query(sql, function(error, results, fields) {
+        if(error) throw error
+
+        if(results.length >= 1) { // 判断是否有数据
+            res.send({
+                status: 200,
+                data: results[0]
+            })
+        } else {
+            res.send({
+                status: 201,
+                msg: '没有数据'
+            })
+        }
     })
 }

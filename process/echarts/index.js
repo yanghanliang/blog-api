@@ -64,7 +64,7 @@ module.exports.webInfo = (req, res) => {
             if (error) throw error
             let valueObj = {}
             results.forEach((item) => {
-                let key = moment(item.createtime).format('YYYY-MM-DD')
+                let key = moment(item.last_time).format('YYYY-MM-DD')
                 if (valueObj[key]) {
                     valueObj[key] = valueObj[key] + 1
                 } else {
