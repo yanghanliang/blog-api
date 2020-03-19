@@ -94,12 +94,16 @@ module.exports.userJurisdiction = (req, res) => {
     // 验证 Token
     jwt.verify(token, secret, (error, decoded) => {
         if (error) {
+            console.log('验证不通过')
             getDefalutJurisdiction()
         } else {
+            console.log('验证已通过')
             const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId : null
             const sql = `SELECT identification FROM jurisdiction WHERE id not in (${jurisdictionId}) AND is_open = 1 AND distribution = 1`
+            console.log(sql, 'sql')
             connect.query(sql, (error, results, fields) => {
                 if (error) throw error
+                console.log(results, 'results', results.length)
                 if(results.length > 0) {
                     res.send({
                         status: 200,
@@ -108,7 +112,10 @@ module.exports.userJurisdiction = (req, res) => {
                         })
                     })
                 } else {
-                    getDefalutJurisdiction()
+                    res.send({
+                        status: 200,
+                        data: []
+                    })
                 }
             })
         }
