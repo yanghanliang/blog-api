@@ -23,7 +23,6 @@ module.exports.edit = (req, res) => {
     // 添加或修改
     let handleComponent = (isExistence, callback) => {
         let sql = ''
-        console.log(isExistence, 'isExistence')
         if (isExistence) {
             sql = `UPDATE components SET content='${content}' WHERE name = '${name}'`
         } else {

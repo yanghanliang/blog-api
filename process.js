@@ -166,7 +166,6 @@ module.exports.articleDetails = (req, res) => {
     article AS a LEFT OUTER JOIN category AS c
     ON a.category_id = c.id
     WHERE a.id= ${id}`
-    console.log(sql, 'sql')
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
 
@@ -424,7 +423,6 @@ module.exports.articleCategory = (req, res) => {
             WHERE classname = '${classname}'
             ORDER BY updatetime desc
             LIMIT 0, 5`
-        console.log(sql, 'sql1')
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
             if (results.length > 0) {

@@ -12,6 +12,15 @@ module.exports.uploadFile = (req, res) => {
     form.uploadDir = uploadDir
     // 保留图片的扩展名
     form.keepExtensions = true
+    // 判断目录是否存在
+    fs.access(uploadDir, fs.constants.F_OK, function (err) {
+        if(err) {
+            // 不存在则创建目录
+            fs.mkdir(uploadDir, {'recursive': true}, function (err) {
+                console.log(err)
+            })
+        }
+    })
 
     //执行里面的回调函数的时候，表单已经全部接收完毕了。
     form.parse(req, function(error, fields, files) {

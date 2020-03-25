@@ -13,7 +13,6 @@ module.exports.getIndex = (req, res) => {
     const date = req.query.date
     let start_date = new Date(date[0]).getTime()
     let end_date = new Date(date[1]).getTime()
-    console.log(req.params, '--', req.query, '??')
     // 获取点赞数和阅读数
     const sql_article = function(callback) {
         const sql = `select sum(praise), sum(\`read\`) FROM article`
