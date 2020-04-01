@@ -32,17 +32,25 @@ let pool  = mysql.createPool({
 let today = new Date().getTime()
 pool.on('acquire', function (connection) {
     let time = new Date().getTime()
+    // 每隔1个小时删除一次备份数据
     if (time - today > 1 * 60 * 60 * 1000) {
         today = time
-        fs.readdirSync('./backupsSqlData').map((file) => {
-            fs.unlink(`./backupsSqlData/${file}`,(error) => {
-                if (error) throw error
-            })
+        let backupsSqlData = fs.readdirSync('./backupsSqlData')
+        // 遍历所有的备份文件
+        backupsSqlData.map((file, key) => {
+            // 留最后一个备份数据
+            if (key < backupsSqlData.length - 1) {
+                // 删除备份文件
+                fs.unlink(`./backupsSqlData/${file}`,(error) => {
+                    if (error) throw error
+                })
+            }
         })
     }
+
+    // 数据备份
     let path = `${__dirname}\\backupsSqlData\\${time}.sql`  
     let sql = `mysqldump -h127.0.0.1 -P3306 -uroot -proot blog -B > ${path}`
-
     exec(sql, (error, stdout, stderr) => {
         if (error) throw error
     })
