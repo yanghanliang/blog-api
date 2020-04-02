@@ -188,10 +188,11 @@ module.exports.addArticle = (req, res, data) => {
     const createtime = new Date().getTime() // 获取当前时间戳（精确到毫米
     const classNameId = data.classname, // 类型
           title = data.title, // 标题
+          original = data.original, // 出自
           synopsis = data.synopsis, // 简介
           content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
 
-    const sql = `INSERT INTO article(category_id, title, synopsis, createtime, content) VALUES ('${classNameId}', '${title}', '${synopsis}', '${createtime}', '${content}')`
+    const sql = `INSERT INTO article(category_id, title, synopsis, createtime, original, content) VALUES ('${classNameId}', '${title}', '${synopsis}', '${createtime}', ${original}, '${content}')`
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error
@@ -210,11 +211,12 @@ module.exports.editArticle = (req, res, data) => {
     const updatetime = new Date().getTime() // 获取当前时间戳（精确到毫米
     const categoryId = data.classname, // 类型
           title = data.title, // 标题
+          original = data.original, // 出自
           synopsis = data.synopsis, // 简介
           content = data.content.replace(/[']+/g, '&apos;'), // 内容, 单引号转义
           id = req.params.articleId // id
-    const sql = `UPDATE article SET category_id=${categoryId}, title='${title}', synopsis='${synopsis}', content='${content}', updatetime=${updatetime} WHERE id=${id}`
-    
+    const sql = `UPDATE article SET category_id=${categoryId}, title='${title}', synopsis='${synopsis}', original=${original}, content='${content}', updatetime=${updatetime} WHERE id=${id}`
+    console.log(sql, 'sql')
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error

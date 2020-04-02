@@ -7,7 +7,7 @@ const router = express.Router()
 // 引入处理方法
 var process = require('../../process/jurisdiction/index.js')
 
-router.get('/list', (req, res) => {
+router.get('/list/:distribution', (req, res) => {
     process.list(req, res)
 })
 

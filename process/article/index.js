@@ -16,7 +16,7 @@ module.exports.recommend = (req, res) => {
         title = data.title,
         id = data.id
 
-        // 获取分页数据
+        // 获取分页数据(可优化)
         const getData = (callback) => {
             const sql = `SELECT * FROM article WHERE (category_id=${categoryId} OR title Like '%${title}%' OR content Like '%${title}%') AND id != ${id} LIMIT ${currentPage, pageSize}`
             connect.query(sql, (error, results, fields) => {
