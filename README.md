@@ -176,6 +176,7 @@ CREATE TABLE IF NOT EXISTS `category` (
   `classname` varchar(30) NOT NULL COMMENT '分类名称',
   `pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
   `pid_classname` varchar(30) NOT NULL COMMENT '父分类名称',
+  `type` text COMMENT '分类类型（1-文章,2-书签）,用逗号分割',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ```
@@ -255,15 +256,15 @@ SELECT * FROM jurisdiction WHERE id = 11 or id = 12 or id = 13
 
 
 ## 书签表
-<!-- ```sql
-CREATE TABLE IF NOT EXISTS `category` (
+```sql
+CREATE TABLE IF NOT EXISTS `bookmark` (
   `id` smallint(6) NOT NULL AUTO_INCREMENT,
-  `classname` varchar(30) NOT NULL COMMENT '分类名称',
-  `pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
-  `pid_classname` varchar(30) NOT NULL COMMENT '父分类名称',
+  `name` varchar(30) NOT NULL COMMENT '书签名称',
+  `class_id` smallint(6)  COMMENT '分类id',
+  `link` text COMMENT '链接',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-``` -->
+```
 
 ### 网站预览数据表
 

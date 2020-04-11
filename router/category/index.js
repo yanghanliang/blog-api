@@ -5,7 +5,7 @@ const express = require('express')
 const router = express.Router()
 
 // 引入处理方法
-var process = require('../../process.js')
+var process = require('../../process/category/index.js')
 
 // 获取分类数据
 router.get('/category', (req, res) => {
@@ -30,6 +30,11 @@ router.post('/addCategory', (req, res) => {
 // 删除分类
 router.delete('/deleteCategory/:categoryId', (req, res) => {
     process.deleteCategory(req, res)
+})
+
+// 查询分类
+router.post('/category/query/className', (req, res) => {
+    process.queryClass(req, res)
 })
 
 module.exports = router
