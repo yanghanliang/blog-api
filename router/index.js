@@ -14,6 +14,7 @@ const user = require('./user/index.js')
 const jurisdiction = require('./jurisdiction/index')
 const components = require('./components/index')
 const echarts = require('./echarts/index.js')
+const bookmark = require('./bookmark/index')
 
 // 创建路由对象
 var router = express.Router()
@@ -27,6 +28,7 @@ router.use('/user', user)                       // 用户
 router.use('/jurisdiction', jurisdiction)       // 权限
 router.use('/components', components)           // 组件
 router.use('/echarts', echarts)                 // 图表数据
+router.use('/bookmark', bookmark)               // 书签
 
 // 调用自定义登录的方法
 router.post('/login', (req, res) => {
