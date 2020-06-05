@@ -7,8 +7,14 @@ const connect = require('../../database.js')
 
 // 权限列表
 module.exports.list = (req, res) => {
-    let distribution = Number(req.params.distribution) ? req.params.distribution : 0
-    const sql = `SELECT * FROM jurisdiction WHERE distribution=${distribution} ORDER BY weight`
+    let distribution = req.params.distribution
+    let sql = ''
+    if (distribution) {
+        sql = `SELECT * FROM jurisdiction WHERE distribution=${distribution} ORDER BY weight`
+    } else {
+        sql = `SELECT * FROM jurisdiction ORDER BY weight`
+    }
+    
 
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
