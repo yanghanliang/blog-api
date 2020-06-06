@@ -4,6 +4,8 @@
 
 // 导入自定义操作数据库的方法
 const connect = require('../../database.js')
+// 获取 ip
+const ip = require('ip')
 // 导入签发与验证 JWT 的功能包
 const jwt = require('jsonwebtoken')
 // 解决异步操作
@@ -270,4 +272,20 @@ module.exports.details = (req, res) => {
             })
         }
     })
+}
+
+// 获取用户 ip
+module.exports.getUserIp = (req, res) => {
+    const userIp = ip.address()
+    if (userIp) {
+        res.send({
+            status: 200,
+            data: userIp
+        })
+    } else {
+        res.send({
+            status: 201,
+            data: '没有获取到ip'
+        })
+    }
 }

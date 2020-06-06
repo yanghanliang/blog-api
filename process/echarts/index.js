@@ -174,7 +174,6 @@ module.exports.updateBrowseUser = (req, res) => {
     sumTime = data.sumTime
 
     const sql = `UPDATE previewdata SET last_time='${lastTime}', sum_time='${sumTime}' WHERE id=${id}`
-    // console.log(sql, 'sql')
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send({
