@@ -23,8 +23,8 @@ router.post('/add/browse/user', (req, res) => {
 })
 
 // 更新浏览用户的数据
-router.get('/update/browse/user', (req, res) => {
-    process.updateBrowseUser(req, res)
+router.get('/update/browse/user', (req, res, next) => {
+    process.updateBrowseUser(req, res, next)
 })
 
 // 文章数据总报表
