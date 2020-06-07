@@ -72,9 +72,9 @@ app.use((req, res, next) => {
                         return item
                     }
                 })
-                console.log(decoded, 'decoded')
+                // console.log(decoded, 'decoded')
                 const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId.split(',') : []
-                console.log('==============', jurisdictionId, id)
+                // console.log('==============', jurisdictionId, id)
                 // 判断当前用户是否具备此权限
                 if (jurisdictionId.includes(String(id))) {
                     next()

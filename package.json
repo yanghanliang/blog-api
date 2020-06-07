@@ -7,6 +7,7 @@
     "ecdsa-sig-formatter": "^1.0.10",
     "express": "^4.16.4",
     "formidable": "^1.2.1",
+    "ip": "^1.1.5",
     "isarray": "^2.0.4",
     "jsonwebtoken": "^8.4.0",
     "jwa": "^1.1.6",

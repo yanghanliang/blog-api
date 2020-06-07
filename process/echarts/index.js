@@ -153,10 +153,9 @@ module.exports.ipIsExistence = (req, res) => {
 module.exports.addBrowseUser = (req, res) => {
     const data = req.body,
         ip = data.ip,
-        lastTime = new Date().getTime(),
-        sumTime = data.sumTime
+        lastTime = new Date().getTime()
 
-    const sql = `insert into previewdata(ip, last_time, sum_time) values ('${ip}',' ${lastTime}', '${sumTime}')`
+    const sql = `insert into previewdata(ip, last_time) values ('${ip}',' ${lastTime}')`
     connect.query(sql, (error, results, fields) => {
         if (error) throw error
         res.send({
@@ -167,16 +166,22 @@ module.exports.addBrowseUser = (req, res) => {
 }
 
 // 更新浏览用户的数据
-module.exports.updateBrowseUser = (req, res) => {
+module.exports.updateBrowseUser = (req, res, next) => {
     const data = req.query,
     id = data.id,
     lastTime = new Date().getTime(),
     sumTime = data.sumTime
 
     const sql = `UPDATE previewdata SET last_time='${lastTime}', sum_time='${sumTime}' WHERE id=${id}`
-    // console.log(sql, 'sql')
     connect.query(sql, (error, results, fields) => {
-        if (error) throw error
+        if (error) {
+            // console.log(error)
+            return res.send({
+                status: 202,
+                msg: '参数错误'
+            })
+        }
+
         res.send({
             status: 200,
             data: results,

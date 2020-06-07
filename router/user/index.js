@@ -47,4 +47,8 @@ router.get('/details', (req, res) => {
     process.details(req, res)
 })
 
+router.get('/ip', (req, res) => {
+    process.getUserIp(req, res)
+})
+
 module.exports = router
