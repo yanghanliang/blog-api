@@ -3,8 +3,8 @@ const formidable = require('formidable')
 // 引入fs模块
 const fs = require('fs')
 // WORD 转 PDF
-const toPdf = require("office-to-pdf")
-const libre = require('libreoffice-convert')
+// const toPdf = require("office-to-pdf")
+// const libre = require('libreoffice-convert')
 const util = require('util')
 // 引入验证方法
 const verification = require('./verification')
