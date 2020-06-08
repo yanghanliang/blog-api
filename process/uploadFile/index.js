@@ -63,13 +63,16 @@ module.exports.fileConversion = async (req, res) => {
     const wordUrl = data.wordUrl
 
     const exec = util.promisify(require('child_process').exec)
-    async function createPDFExample () {
+    try {
         await exec(`unoconv -f pdf ${wordUrl}`)
         res.send({
             status: 200,
             url: wordUrl.split('.')[1] + '.pdf'
         })
+    } catch (err) {
+        res.send({
+            status: 201,
+            msg: '转换失败'
+        })
     }
-
-    createPDFExample()
 }
