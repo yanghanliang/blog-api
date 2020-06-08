@@ -67,7 +67,9 @@ module.exports.fileConversion = async (req, res) => {
         await exec(`unoconv -f pdf ${wordUrl}`)
         res.send({
             status: 200,
-            url: wordUrl.split('.')[1] + '.pdf'
+            data: {
+                url: wordUrl.split('.')[1] + '.pdf'
+            }
         })
     } catch (err) {
         res.send({
