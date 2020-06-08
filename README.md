@@ -487,3 +487,57 @@ SELECT COUNT(id) FROM comment WHERE time BETWEEN '2019-03-06 16:43:10' AND '2019
 		+ 需要重新获取当前用户不具有并且需要验证的权限，取进行验证（阻止页面跳转并提示当前用户不具备此权限）
 			+ 拿到用户名，去查询此用户具备什么权限，再去权限表中找到当前用户不具有并且需要验证的权限
 			+ 已知当前用户的权限，直接去权限表中找到当前用户不具有并且需要验证的权限
+
+### 实现word转换pdf
+
+1. 安装 `unoconv`
+
+`apt-get install unoconv`
+
+2. 
+```js
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
+async function createPDFExample() {
+  const { stdout, stderr } = await exec('unoconv -f pdf ./uploadFile/word/upload_2933d38429b89103ddd899436d26bdd7.doc');
+  console.log('stdout:', stdout);
+  console.log('stderr:', stderr);
+}
+
+createPDFExample();
+```
+
+3. 安装运行之后即可在源文件目录下生成一个同名的.pdf文件,但中文会出现乱码
+
+4. 将Windows下的Fonts，如：C:\Windows\Fonts，压缩成Fonts.zip压缩包
+
+5. 使用Xshell上传压缩包
+
+5.1 检测是否安装了 `rz`
+
+5.2 如果没有安装则安装: `apt install lrzsz`
+
+5.3 使用 `rz -y` 会弹出文件选择,上传即可
+
+6. 移动到 /usr/share/fonts/win 夹下
+
+6.1 `mkdir /usr/share/fonts/win`  // 生成文件夹
+
+6.2 `mv ./Fonts.zip /usr/share/fonts/win/Fonts.zip` // 移动到这个文件夹里
+
+6.3 `unzip Fonts.zip` // 解压,如果没有这个压缩软件，按照提示安装即可
+
+6.4 `chmod  -Rf 755 *` // 放开文件权限-有时候是可以省略的
+
+7. 依次执行
+
+mkfontscale  
+mkfontdir  		// 生成字体的索引信息
+fc-cache –fv	// 更新字体缓存
+
+8. 有的人说需要重启服务器，但貌似不重启也可以的,再试以下步骤2,发现生成的文件没什么问题了
+,但是如果你的word写得不好，还是会有点问题，例如你没有设置行间距，pdf就会表现为很紧凑
+
+http://www.voidcn.com/article/p-abaualbc-bus.html 参考
+---

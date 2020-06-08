@@ -3,8 +3,6 @@ const formidable = require('formidable')
 // 引入fs模块
 const fs = require('fs')
 // WORD 转 PDF
-// const toPdf = require("office-to-pdf")
-// const libre = require('libreoffice-convert')
 const util = require('util')
 // 引入验证方法
 const verification = require('./verification')
@@ -60,50 +58,13 @@ module.exports.deleteFile = (req, res) => {
 
 // 文件转换
 module.exports.fileConversion = async (req, res) => {
-    // const data = req.body
-    // const from = data.from
-    // const to = data.to ? data.to : `../../uploadFile/${new Date().getTime()}.pdf`
-    // console.log(from, to, 'from, to')
-    // const wordBuffer = fs.readFileSync('./uploadFile/word/upload_2933d38429b89103ddd899436d26bdd7.doc')
-    
-    // const data = await toPdf(wordBuffer).then((pdfBuffer) => {
-    //         fs.writeFileSync('./uploadFile/pdf/test.pdf', pdfBuffer)
-    //         // res.send({
-    //         //     status: 200,
-    //         //     url: to
-    //         // })
-    //     }, (err) => {
-    //         console.log(err)
-    //     }
-    // )
+    const data = req.body
+    // ./uploadFile/word/upload_2933d38429b89103ddd899436d26bdd7.doc
+    const wordUrl = data.wordUrl
 
-    // console.log(data, 'data')
-
-    
-
-    
-    // const extend = '.pdf'
-    // // const enterPath = path.join(__dirname, '/resources/example.docx');
-    // // const outputPath = path.join(__dirname, `/resources/example${extend}`);
-    
-    // // Read file
-    // const enterPath = fs.readFileSync('./uploadFile/word/upload_2933d38429b89103ddd899436d26bdd7.doc');
-    // console.log(enterPath, 'enterPath')
-    // // Convert it to pdf format with undefined filter (see Libreoffice doc about filter)
-    // libre.convert(enterPath, extend, undefined, (err, done) => {
-    //     if (err) {
-    //         console.log(`Error converting file: ${err}`)
-    //     }
-        
-    //     // Here in done you have pdf file which you can save or transfer in another stream
-    //     fs.writeFileSync('./uploadFile/pdf/test.pdf', done)
-    // })
-
-
-    
     const exec = util.promisify(require('child_process').exec)
     async function createPDFExample () {
-        const { stdout, stderr } = await exec('unoconv -f pdf ./uploadFile/word/upload_2933d38429b89103ddd899436d26bdd7.doc')
+        const resulte = await exec(`unoconv -f pdf ${wordUrl}`)
         console.log('stdout:', stdout)
         console.log('stderr:', stderr)
     }
