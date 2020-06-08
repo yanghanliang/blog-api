@@ -64,9 +64,11 @@ module.exports.fileConversion = async (req, res) => {
 
     const exec = util.promisify(require('child_process').exec)
     async function createPDFExample () {
-        const resulte = await exec(`unoconv -f pdf ${wordUrl}`)
-        console.log('stdout:', resulte)
-        // console.log('stderr:', stderr)
+        await exec(`unoconv -f pdf ${wordUrl}`)
+        res.send({
+            status: 200,
+            url: wordUrl.split('.')[1] + '.pdf'
+        })
     }
 
     createPDFExample()
