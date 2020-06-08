@@ -1,12 +1,19 @@
 // 处理图片上传
-let formidable = require('formidable')
+const formidable = require('formidable')
 // 引入fs模块
-let fs = require('fs')
+const fs = require('fs')
+// WORD 转 PDF
+const toPdf = require("office-to-pdf")
+const libre = require('libreoffice-convert')
+const util = require('util')
+// 引入验证方法
+const verification = require('./verification')
 
-
+// 上传文件 [图片，word]
 module.exports.uploadFile = (req, res) => {
     let form = new formidable()
-    let uploadDir = req.query.uploadDir ? req.query.uploadDir : './uploadFileURl'
+    let uploadDir = req.query.uploadDir ? req.query.uploadDir : './uploadFile'
+    let type = req.query.type ? req.query.type : 'image'
 
     //设置文件上传存放地址
     form.uploadDir = uploadDir
@@ -28,26 +35,18 @@ module.exports.uploadFile = (req, res) => {
         // console.log("fields:",fields) // 这里能获取到传的参数的信息，如上面的message参数，可以通过fields。message来得到 
         // console.log("path:", files.file.path) // 获取图片路径
         if(error) throw error
-        if (files.file.size/1024/1024 > 5 || files.file === undefined) {
-            res.send({
-                status: 201,
-                msg: '上传头像图片大小不能超过 5MB!'
-            })
-        } else if (files.file.type.indexOf('image') === -1) {
-            res.send({
-                status: 201,
-                msg: '请提交图片格式的文件，如后缀名为： .gif、.png、.jpg'
-            })
-        } else {
-            res.send({
-                status: 200,
-                url: files.file === undefined ? false : files.file.path.replace(/[\\]/g, '/')
-            })
+        if (type === 'image') {
+            verification.image(files, res)
         }
+
+        res.send({
+            status: 200,
+            url: files.file === undefined ? false : files.file.path.replace(/[\\]/g, '/')
+        })
     })
 }
 
-// 删除图片
+// 删除文件 [图片]
 module.exports.deleteFile = (req, res) => {
     const url = req.body.path
     fs.unlink(url, function(error) {
@@ -57,4 +56,57 @@ module.exports.deleteFile = (req, res) => {
             msg: '删除成功'
         })
     })
+}
+
+// 文件转换
+module.exports.fileConversion = async (req, res) => {
+    // const data = req.body
+    // const from = data.from
+    // const to = data.to ? data.to : `../../uploadFile/${new Date().getTime()}.pdf`
+    // console.log(from, to, 'from, to')
+    // const wordBuffer = fs.readFileSync('./uploadFile/word/upload_2933d38429b89103ddd899436d26bdd7.doc')
+    
+    // const data = await toPdf(wordBuffer).then((pdfBuffer) => {
+    //         fs.writeFileSync('./uploadFile/pdf/test.pdf', pdfBuffer)
+    //         // res.send({
+    //         //     status: 200,
+    //         //     url: to
+    //         // })
+    //     }, (err) => {
+    //         console.log(err)
+    //     }
+    // )
+
+    // console.log(data, 'data')
+
+    
+
+    
+    // const extend = '.pdf'
+    // // const enterPath = path.join(__dirname, '/resources/example.docx');
+    // // const outputPath = path.join(__dirname, `/resources/example${extend}`);
+    
+    // // Read file
+    // const enterPath = fs.readFileSync('./uploadFile/word/upload_2933d38429b89103ddd899436d26bdd7.doc');
+    // console.log(enterPath, 'enterPath')
+    // // Convert it to pdf format with undefined filter (see Libreoffice doc about filter)
+    // libre.convert(enterPath, extend, undefined, (err, done) => {
+    //     if (err) {
+    //         console.log(`Error converting file: ${err}`)
+    //     }
+        
+    //     // Here in done you have pdf file which you can save or transfer in another stream
+    //     fs.writeFileSync('./uploadFile/pdf/test.pdf', done)
+    // })
+
+
+    
+    const exec = util.promisify(require('child_process').exec)
+    async function createPDFExample () {
+        const { stdout, stderr } = await exec('unoconv -f pdf sample.js')
+        console.log('stdout:', stdout)
+        console.log('stderr:', stderr)
+    }
+
+    createPDFExample()
 }
