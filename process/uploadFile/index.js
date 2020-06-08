@@ -68,7 +68,7 @@ module.exports.fileConversion = async (req, res) => {
         res.send({
             status: 200,
             data: {
-                url: wordUrl.split('.')[1] + '.pdf'
+                url: wordUrl.match(/[a-zA-Z]{1}.+[.]{1}/) + 'pdf'
             }
         })
     } catch (err) {
