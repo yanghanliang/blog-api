@@ -36,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // 访问静态文件（图片,如果不设置的话，就找不到图片
 app.use('/head_portrait_url', express.static('head_portrait_url'))
-app.use('/uploadFileURl', express.static('uploadFileURl'))
+app.use('/uploadFile', express.static('uploadFile'))
 
 // 权限验证
 process.verification(app)
