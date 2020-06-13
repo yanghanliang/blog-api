@@ -53,6 +53,11 @@ module.exports.details = (req, res) => {
                 status: 200,
                 data: results
             })
+        } else {
+            res.send({
+                status: 201,
+                msg: '没有此组件'
+            })
         }
     })
 }
