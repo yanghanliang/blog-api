@@ -67,7 +67,7 @@ app.use((req, res, next) => {
                 // 已登录
                 const [{ id }] = app.jurisdictionList.filter((item) => {
                     // 找到此接口的权限id
-                    console.log(url, item.identification, 'item.identification')
+                    // console.log(url, item.identification, 'item.identification')
                     if (url.includes(item.identification)) {
                         return item
                     }
