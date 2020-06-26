@@ -15,7 +15,7 @@ module.exports.login = (req, res, data) => {
     const createToken = (callback) => {
         const username = data.username,
           password = data.password
-        const sql = "SELECT * FROM user WHERE username='"+ username +"' and password='" + password +"'"
+        const sql = "SELECT username, name, alias, background_wall, head_portrait, synopsis, jurisdiction_id, role_id FROM user WHERE username='"+ username +"' and password='" + password +"'"
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
             if(results.length === 1) {
