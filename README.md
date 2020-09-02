@@ -176,6 +176,9 @@ CREATE TABLE IF NOT EXISTS `category` (
   `classname` varchar(30) NOT NULL COMMENT '分类名称',
   `pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
   `pid_classname` varchar(30) NOT NULL COMMENT '父分类名称',
+  `type` text COMMENT '类型,用逗号分割：1-文章，2-书签',
+  `click` int(11) NOT NULL DEFAULT 0 COMMENT '点击量：可以做数据展示||排序',
+  `weight` TINYINT DEFAULT 1 COMMENT '权重：如果为0，就是只有管理员有权限'
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ```
@@ -258,8 +261,9 @@ SELECT * FROM jurisdiction WHERE id = 11 or id = 12 or id = 13
 ```sql
 CREATE TABLE IF NOT EXISTS `bookmark` (
   `id` smallint(6) NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) NOT NULL COMMENT '书签名称',
-  `pid` smallint(6)  COMMENT '父id',
+  `name` text COMMENT '书签名称',
+  `class_name` varchar(30) NOT NULL DEFAULT '第一层级' COMMENT '书签分类名称',
+  `pid` smallint(6) NOT NULL DEFAULT 0 COMMENT '父id',
   `link` text COMMENT '链接',
   `weight` int(11) NOT NULL DEFAULT 0 COMMENT '权重',
   `icon` varchar(30) NOT NULL DEFAULT '' COMMENT 'icon',
@@ -279,6 +283,7 @@ CREATE TABLE IF NOT EXISTS `previewdata` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ```
+
 
 ---
 
@@ -541,3 +546,32 @@ fc-cache –fv	// 更新字体缓存
 
 http://www.voidcn.com/article/p-abaualbc-bus.html 参考
 ---
+
+### req.params || req.query
+
+`get请求的两种传参方式`
+
+> req.params
+
+```js
+this.$http.get('editCategory/1')
+
+router.get('/editCategory/:categoryId', (req, res) => {
+    process.editCategory(req, res)
+})
+
+req.params.categoryId
+```
+
+> req.query
+
+```js
+this.$http.get(`editCategory?categoryId=1`)
+this.$http.get('bookmark/list', { parmas: { categoryId: 1 })
+
+router.get('/editCategory', (req, res) => {
+    process.editCategory(req, res)
+})
+
+req.query.categoryId
+```

@@ -22,4 +22,29 @@ router.get('/list', (req, res) => {
     process.list(req, res)
 })
 
+// 获取书签详情
+router.get('/detail', (req, res) => {
+    process.detail(req, res)
+})
+
+// 修改书签详情
+router.put('/edit', (req, res) => {
+    process.edit(req, res, req.body)
+})
+
+// 获取书签导航列表
+router.get('/nav', (req, res) => {
+    process.bookmarkNav(req, res)
+})
+
+// 获取书签分类列表
+router.get('/categoryList', (req, res) => {
+    process.categoryList(req, res)
+})
+
+// 删除书签分类
+router.delete('/delete/:categoryId', (req, res) => {
+    process.deleteCatrgory(req, res)
+})
+
 module.exports = router

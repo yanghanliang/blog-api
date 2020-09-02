@@ -8,8 +8,8 @@ const router = express.Router()
 var process = require('../../process/category/index.js')
 
 // 获取分类数据
-router.get('/category', (req, res) => {
-    process.category(req, res)
+router.post('/category', (req, res) => {
+    process.category(req, res, req.body)
 })
 
 // 获取修改分类的数据
