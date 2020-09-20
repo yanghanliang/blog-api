@@ -10,28 +10,19 @@ const e = require('express')
 
 // 获取分类数据
 module.exports.category = (req, res, data) => {
-    const type = data.type ? data.type : ''
     const currentPage = data.currentPage
     const pageSize = data.pageSize
-    const sortField = data.sortField ? data.sortField : 'click'
+    const sortField = data.sortField ? data.sortField : 'classname'
     const searchData = data.searchData
     const orderBy = data.orderBy === 'descending' ? 'desc' : 'asc' // 获取排序的方式
     const currentNumber = (currentPage - 1) * pageSize
 
     const total = function (callback) {
         let sql = ''
-        if (type) {
-            if (searchData) {
-                sql = `SELECT COUNT(*) FROM category WHERE type in (${type}) AND classname Like '%${searchData}%'`
-            } else {
-                sql = `SELECT COUNT(*) FROM category WHERE type in (${type})`
-            }
+        if (searchData) {
+            sql = `SELECT COUNT(*) FROM category WHERE classname Like '%${searchData}%'`
         } else {
-            if (searchData) {
-                sql = `SELECT COUNT(*) FROM category WHERE classname Like '%${searchData}%'`
-            } else {
-                sql = `SELECT COUNT(*) FROM category`
-            }
+            sql = `SELECT COUNT(*) FROM category`
         }
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
@@ -41,25 +32,13 @@ module.exports.category = (req, res, data) => {
 
     const list = function(total, callback) {
         let sql = ''
-        if (type) {
-            if (searchData) {
-                sql = `SELECT * FROM category WHERE type in (${type}) AND classname Like '%${searchData}%' ORDER BY ${sortField} ${orderBy} LIMIT ${currentNumber}, ${pageSize}`
-            } else {
-                if (currentNumber && pageSize) {
-                    sql = `SELECT * FROM category WHERE type in (${type}) ORDER BY ${sortField} ${orderBy} LIMIT ${currentNumber}, ${pageSize}`
-                } else {
-                    sql = `SELECT * FROM category WHERE type in (${type}) ORDER BY ${sortField} ${orderBy}`
-                }
-            }
+        if (searchData) {
+            sql = `SELECT * FROM category WHERE classname Like '%${searchData}%' ORDER BY ${sortField} ${orderBy} LIMIT ${currentNumber}, ${pageSize}`
         } else {
-            if (searchData) {
-                sql = `SELECT * FROM category WHERE classname Like '%${searchData}%' ORDER BY ${sortField} ${orderBy} LIMIT ${currentNumber}, ${pageSize}`
+            if (currentNumber && pageSize) {
+                sql = `SELECT * FROM category ORDER BY ${sortField} ${orderBy} LIMIT ${currentNumber}, ${pageSize}`
             } else {
-                if (currentNumber && pageSize) {
-                    sql = `SELECT * FROM category ORDER BY ${sortField} ${orderBy} LIMIT ${currentNumber}, ${pageSize}`
-                } else {
-                    sql = `SELECT * FROM category ORDER BY ${sortField} ${orderBy}`
-                }
+                sql = `SELECT * FROM category ORDER BY ${sortField} ${orderBy}`
             }
         }
         connect.query(sql, (error, results, fields) => {
@@ -86,7 +65,10 @@ module.exports.editCategory = (req, res) => {
     const id = req.params.categoryId
     const sql = `SELECT * FROM category WHERE id = ${id}`
     connect.query(sql, (error, results, fields) => {
-        if (error) throw error
+        if (error) {
+            console.log(error)
+        }
+
         if (results.length === 1) {
             res.send({
                 status: 200,
@@ -116,7 +98,6 @@ module.exports.updateCategory = (req, res, data) => {
 module.exports.addCategory = (req, res, data) => {
     const classname = data.classname // 获取分类名称
     const pid = data.pid // 获取所在层级
-    const type = data.type // 获取分类类型
 
     var selectPidClassName = function(callback){
         if (pid === 0) {
@@ -134,7 +115,7 @@ module.exports.addCategory = (req, res, data) => {
  
 	var addCategoryClassName =function(pid_classname, callback){
         
-        const sql = `INSERT INTO category(classname, pid, pid_classname, type) VALUES ('${classname}', ${pid}, '${pid_classname}', '${type}')`
+        const sql = `INSERT INTO category(classname, pid, pid_classname) VALUES ('${classname}', ${pid}, '${pid_classname}')`
         connect.query(sql, (error, results, fields) => {
             if (error) throw error
             callback(null, {

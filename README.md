@@ -175,10 +175,10 @@ CREATE TABLE IF NOT EXISTS `category` (
   `id` smallint(6) NOT NULL AUTO_INCREMENT,
   `classname` varchar(30) NOT NULL COMMENT '分类名称',
   `pid` smallint(6) NOT NULL DEFAULT '0' COMMENT '父id',
-  `pid_classname` varchar(30) NOT NULL COMMENT '父分类名称',
-  `type` text COMMENT '类型,用逗号分割：1-文章，2-书签',
-  `click` int(11) NOT NULL DEFAULT 0 COMMENT '点击量：可以做数据展示||排序',
-  `weight` TINYINT DEFAULT 1 COMMENT '权重：如果为0，就是只有管理员有权限'
+  `pid_classname` varchar(30) NOT NULL COMMENT '父分类名称'
+--   `type` text COMMENT '类型,用逗号分割：1-文章，2-书签',
+--   `click` int(11) NOT NULL DEFAULT 0 COMMENT '点击量：可以做数据展示||排序',
+--   `weight` TINYINT DEFAULT 1 COMMENT '权重：如果为0，就是只有管理员有权限'
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ```
