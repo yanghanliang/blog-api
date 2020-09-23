@@ -19,6 +19,8 @@
     "process-nextick-args": "^2.0.0",
     "readable-stream": "^3.1.0",
     "sqlstring": "^2.3.1",
-    "util-deprecate": "^1.0.2"
+    "util-deprecate": "^1.0.2",
+    "uuid": "^8.3.0",
+    "ws": "^7.3.1"
   }
 }
