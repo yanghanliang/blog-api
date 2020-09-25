@@ -9,13 +9,13 @@ let chatRecord = []
 // 头像列表
 const headPortraitList = ['a.jpg', 'b.jpg', 'c.jpg', 'd.jpeg']
 
-// type 1-消息，2-登录, 3-登出
-
 /**
  * 广播所有客户端消息
- * @param  {String} type     广播方式(admin为系统消息，user为用户消息)
- * @param  {String} message  消息
- * @param  {String} nickname 用户昵称，广播方式为admin时可以不存在
+ * @param  {object} params                      形参
+ * @param  {number} params.type                1-消息，2-登录, 3-登出
+ * @param  {string} params.id                  用户标识
+ * @param  {string} params.content             消息
+ * @param  {string} params.headPortraitUrl     用户头像
  */
 function broadcastSend(params) {
     for(key in clients) {
