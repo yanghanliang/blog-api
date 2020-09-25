@@ -48,49 +48,49 @@ app.use(/^\/jurisdiction/, (req, res, next) => {
 })
 
 // 登陆验证
-// app.use((req, res, next) => {
-//     const url = req.url.toLocaleLowerCase()
-//     console.log(app.identificationList, 'app.identificationList')
-//     let rules = new RegExp('^\\/' + app.identificationList.join('|^\\/'))
-//     let verification = rules.test(url)
-//     // 判断接口是否需要进行验证
-//     if (app.identificationList.length > 0 && verification) {
-//         // 密钥
-//         const secret = 'YANGHANLIANG'
-//         // 令牌
-//         const token = req.headers.authorization
-//         // 验证 Token
-//         jwt.verify(token, secret, (error, decoded) => {
-//             if (error) {
-//                 // 未登录
-//                 res.send({status: 201, msg: '身份验证失败，请登录~', type: 'token'})
-//             } else {
-//                 // 已登录
-//                 const [{ id }] = app.jurisdictionList.filter((item) => {
-//                     // 找到此接口的权限id
-//                     // console.log(url, item.identification, 'item.identification')
-//                     if (url.includes(item.identification)) {
-//                         return item
-//                     }
-//                 })
-//                 // console.log(decoded, 'decoded')
-//                 const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId.split(',') : []
-//                 // console.log('==============', jurisdictionId, id)
-//                 // 判断当前用户是否具备此权限
-//                 if (jurisdictionId.includes(String(id))) {
-//                     next()
-//                 } else {
-//                     res.send({
-//                         status: 201,
-//                         msg: '您不具备此权限'
-//                     })
-//                 }
-//             }
-//         })
-//     } else {
-//         next()
-//     }
-// })
+app.use((req, res, next) => {
+    const url = req.url.toLocaleLowerCase()
+    // console.log(app.identificationList, 'app.identificationList')
+    let rules = new RegExp('^\\/' + app.identificationList.join('|^\\/'))
+    let verification = rules.test(url)
+    // 判断接口是否需要进行验证
+    if (app.identificationList.length > 0 && verification) {
+        // 密钥
+        const secret = 'YANGHANLIANG'
+        // 令牌
+        const token = req.headers.authorization
+        // 验证 Token
+        jwt.verify(token, secret, (error, decoded) => {
+            if (error) {
+                // 未登录
+                res.send({status: 401, msg: '身份验证失败，请登录~'})
+            } else {
+                // 已登录
+                const [{ id }] = app.jurisdictionList.filter((item) => {
+                    // 找到此接口的权限id
+                    // console.log(url, item.identification, 'item.identification')
+                    if (url.includes(item.identification)) {
+                        return item
+                    }
+                })
+                // console.log(decoded, 'decoded')
+                const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId.split(',') : []
+                // console.log('==============', jurisdictionId, id)
+                // 判断当前用户是否具备此权限
+                if (jurisdictionId.includes(String(id))) {
+                    next()
+                } else {
+                    res.send({
+                        status: 403,
+                        msg: '您不具备此权限'
+                    })
+                }
+            }
+        })
+    } else {
+        next()
+    }
+})
 
 // 使用路由
 app.use(router)

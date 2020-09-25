@@ -98,8 +98,15 @@ module.exports.userJurisdiction = (req, res) => {
         if (error) {
             getDefalutJurisdiction()
         } else {
-            const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId : null
-            const sql = `SELECT identification FROM jurisdiction WHERE id not in (${jurisdictionId}) AND is_open = 1 AND distribution = 1`
+            const jurisdictionId = decoded.jurisdictionId ? decoded.jurisdictionId : ''
+            let sql = ''
+
+            if (jurisdictionId) {
+                sql = `SELECT identification FROM jurisdiction WHERE id not in (${jurisdictionId}) AND is_open = 1 AND distribution = 1`
+            } else {
+                sql = `SELECT identification FROM jurisdiction WHERE is_open = 1 AND distribution = 1`
+            }
+
             connect.query(sql, (error, results, fields) => {
                 if (error) throw error
                 if(results.length > 0) {
