@@ -51,7 +51,8 @@ create table if not exists article(
 	`content` text NOT NULL COMMENT '文章内容',
 	`reward` int(11) NOT NULL DEFAULT '0' COMMENT '打赏数',
 	`reprint` int(11) NOT NULL DEFAULT '0' COMMENT '转载数',
-	`comment_number` int(11) NOT NULL DEFAULT '0' COMMENT '评论数'
+	`comment_number` int(11) NOT NULL DEFAULT '0' COMMENT '评论数',
+	`user_id` text COMMENT '用户id:具有查看此文章权限的用户id,id=0时可以全部查看'
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
 
@@ -575,3 +576,8 @@ router.get('/editCategory', (req, res) => {
 
 req.query.categoryId
 ```
+
+
+
+##### 服务端渲染
+

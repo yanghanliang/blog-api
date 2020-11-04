@@ -18,13 +18,14 @@ module.exports.login = (req, res, data) => {
     const createToken = (callback) => {
         const username = data.username,
           password = data.password
-        const sql = "SELECT username, name, alias, background_wall, head_portrait, synopsis, jurisdiction_id, role_id FROM user WHERE username='"+ username +"' and password='" + password +"'"
+        const sql = "SELECT * FROM user WHERE username='"+ username +"' and password='" + password +"'"
         connect.query(sql, function(error, results, fields) {
             if(error) throw error
             if(results.length === 1) {
                 // Token 数据
                 const payload = {
-                    userName: username,
+                    userId: results[0].id,
+                    userName: results[0].username,
                     jurisdictionId: results[0].jurisdiction_id
                 }
 
@@ -52,7 +53,7 @@ module.exports.login = (req, res, data) => {
             } else {
                 // 返回数据
                 res.json({
-                    status: 401,
+                    status: 403,
                     msg: '用户名或密码不正确~'
                 })
             }
@@ -164,11 +165,14 @@ module.exports.articleList = (req, res) => {
 
 // 文章详情
 module.exports.articleDetails = (req, res) => {
+    const userId = req.params.userId // 获取用户 id
     const id = req.params.articleId // 获取文章 id
     const sql = `SELECT a.*,c.classname FROM
     article AS a LEFT OUTER JOIN category AS c
     ON a.category_id = c.id
     WHERE a.id= ${id}`
+
+
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
 
@@ -180,7 +184,7 @@ module.exports.articleDetails = (req, res) => {
             // 返回数据
             res.json({
                 status: 401,
-                msg: '该文章没有评论'
+                msg: '您没有权限查看此文章'
             })
         }
     })
@@ -193,9 +197,10 @@ module.exports.addArticle = (req, res, data) => {
           title = data.title, // 标题
           original = data.original, // 出自
           synopsis = data.synopsis, // 简介
-          content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
+          content = data.content.replace(/[']+/g, '&apos;'), // 内容, 单引号转义
+          userId = data.userId.join(',') // 用户 ID
 
-    const sql = `INSERT INTO article(category_id, title, synopsis, createtime, original, content) VALUES ('${classNameId}', '${title}', '${synopsis}', '${createtime}', ${original}, '${content}')`
+    const sql = `INSERT INTO article(category_id, title, synopsis, createtime, original, content, user_id) VALUES ('${classNameId}', '${title}', '${synopsis}', '${createtime}', ${original}, '${content}', '${userId}')`
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error
@@ -217,9 +222,9 @@ module.exports.editArticle = (req, res, data) => {
           original = data.original, // 出自
           synopsis = data.synopsis, // 简介
           content = data.content.replace(/[']+/g, '&apos;'), // 内容, 单引号转义
-          id = req.params.articleId // id
-    const sql = `UPDATE article SET category_id=${categoryId}, title='${title}', synopsis='${synopsis}', original=${original}, content='${content}', updatetime=${updatetime} WHERE id=${id}`
-    console.log(sql, 'sql')
+          id = req.params.articleId, // id
+          userId = data.userId.join(',') // 用户 ID
+    const sql = `UPDATE article SET category_id=${categoryId}, title='${title}', synopsis='${synopsis}', original=${original}, content='${content}', updatetime=${updatetime}, user_id='${userId}' WHERE id=${id}`
     connect.query(sql, function(error, results, fields) {
         if(error) {
             throw error
@@ -691,7 +696,7 @@ module.exports.modifyCommentInformation = (req, res) => {
     })
 }
 
-// 
+// 测试数据
 module.exports.testData = (req, res) => {
     console.log(AlipaySdk, 'AlipaySdk')
     AlipaySdk = AlipaySdk.default

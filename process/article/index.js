@@ -69,3 +69,19 @@ module.exports.praise = (req, res) => {
         })
     })
 }
+
+// 查询文章是否存在
+module.exports.isExistence = (req, res) => {
+    const title = req.query.title
+    const sql = `SELECT * FROM article WHERE title = '${title}'`
+    console.log(req.query, 'title', req.params)
+    connect.query(sql, (error, results, fields) => {
+        if (error) console.log(error, 'error')
+        console.log(results, 'results')
+        const data = Object.values(results)
+        res.send({
+            status: 200,
+            data: data.length > 0 ? true : false
+        })
+    })
+}

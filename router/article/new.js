@@ -17,4 +17,9 @@ router.post('/praise', (req, res) => {
     article.praise(req, res)
 })
 
+// 查询文章是否存在
+router.get('/isExistence', (req, res) => {
+    article.isExistence(req, res)
+})
+
 module.exports = router
