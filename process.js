@@ -165,21 +165,46 @@ module.exports.articleList = (req, res) => {
 
 // 文章详情
 module.exports.articleDetails = (req, res) => {
-    const userId = req.params.userId // 获取用户 id
     const id = req.params.articleId // 获取文章 id
     const sql = `SELECT a.*,c.classname FROM
     article AS a LEFT OUTER JOIN category AS c
     ON a.category_id = c.id
     WHERE a.id= ${id}`
 
-
     connect.query(sql, function(error, results, fields) {
         if(error) throw error
 
         if(results.length >= 1) {
             results[0].content = results[0].content.replace(/(&apos;)+/g, '\'') // 还原单引号
-            // 返回数据
-            res.send(results)
+            const userId = results[0].user_id ? results[0].user_id.split(',') : [0]
+            if (userId.includes(0)) {
+                return res.send({
+                    status: 200,
+                    data: results[0]
+                })
+            }
+            // 密钥
+            const secret = 'YANGHANLIANG'
+            // 令牌
+            const token = req.headers.authorization
+            // 验证 Token
+            jwt.verify(token, secret, (error, decoded) => {
+                if (error) {
+                    // 未登录
+                    res.send({status: 401, msg: '请登录后再进行查看~'})
+                } else {
+                    // 已登录
+                    const currentUserId = String(decoded.userId)
+                    if (userId.includes(currentUserId)) {
+                        return res.send({
+                            status: 200,
+                            data: results[0]
+                        })
+                    }
+                    
+                    res.send({status: 403, msg: '您不具有此文章的查看权限~'})
+                }
+            })
         } else {
             // 返回数据
             res.json({
