@@ -195,11 +195,11 @@ module.exports.articleDetails = (req, res) => {
                 } else {
                     // 已登录
                     const currentUserId = String(decoded.userId)
-                    if (userId.includes(currentUserId)) {
+                    if (userId.includes(currentUserId) || userId[0] === '0') {
                         return res.send({
                             status: 200,
-                            data: results[0]
-                        })
+                            data: results[0],
+                        });
                     }
                     
                     res.send({status: 403, msg: '您不具有此文章的查看权限~'})

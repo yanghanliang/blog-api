@@ -268,6 +268,7 @@ CREATE TABLE IF NOT EXISTS `bookmark` (
   `link` text COMMENT '链接',
   `weight` int(11) NOT NULL DEFAULT 0 COMMENT '权重',
   `icon` varchar(30) NOT NULL DEFAULT '' COMMENT 'icon',
+  `user_id` text COMMENT '用户id:具有查看此文章权限的用户id,id=0时可以全部查看',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ```

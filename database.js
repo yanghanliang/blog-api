@@ -3,6 +3,8 @@
 const mysql = require('mysql')
 const fs = require('fs')
 const exec = require('child_process').exec
+const user = 'root'
+const password = 'yang666'
 
 // 普通连接-start
 // 配置连接参数
@@ -23,8 +25,8 @@ const exec = require('child_process').exec
 // 连接池连接-start
 let pool  = mysql.createPool({
     host: 'localhost',
-    user: 'root',
-    password: 'root',
+    user,
+    password,
     database: 'blog'
 })
 
@@ -51,7 +53,7 @@ pool.on('acquire', function (connection) {
 
     // 数据备份
     let path = `${basePath}//${time}.sql`
-    let sql = `mysqldump -h127.0.0.1 -P3306 -uroot -proot blog -B > ${path}`
+    let sql = `mysqldump -h127.0.0.1 -P3306 -u${root} -p${password} blog -B > ${path}`
     exec(sql, (error, stdout, stderr) => {
         if (error) throw error
     })
