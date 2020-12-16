@@ -53,7 +53,7 @@ pool.on('acquire', function (connection) {
 
     // 数据备份
     let path = `${basePath}//${time}.sql`
-    let sql = `mysqldump -h127.0.0.1 -P3306 -u${root} -p${password} blog -B > ${path}`
+    let sql = `mysqldump -h127.0.0.1 -P3306 -u${user} -p${password} blog -B > ${path}`
     exec(sql, (error, stdout, stderr) => {
         if (error) throw error
     })
