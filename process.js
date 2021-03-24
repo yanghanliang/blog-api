@@ -176,8 +176,8 @@ module.exports.articleDetails = (req, res) => {
 
         if(results.length >= 1) {
             results[0].content = results[0].content.replace(/(&apos;)+/g, '\'') // 还原单引号
-            const userId = results[0].user_id ? results[0].user_id.split(',') : [0]
-            if (userId.includes(0)) {
+            const userId = results[0].user_id ? results[0].user_id.split(',') : ['0']
+            if (userId.includes('0')) {
                 return res.send({
                     status: 200,
                     data: results[0]
