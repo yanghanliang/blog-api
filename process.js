@@ -176,8 +176,8 @@ module.exports.articleDetails = (req, res) => {
 
         if(results.length >= 1) {
             results[0].content = results[0].content.replace(/(&apos;)+/g, '\'') // 还原单引号
-            results[0].content = results[0].content.replace(/(&#92;)+/g, '\\') // 还原反斜杠
-            results[0].content = results[0].content.replace(/(&#hh;)+/g, '\n') // 还原反斜杠
+            results[0].content = results[0].content.replace(/(&#92;)/g, '\\') // 还原反斜杠
+            results[0].content = results[0].content.replace(/(&#hh;)/g, '\n') // 还原反斜杠
             const userId = results[0].user_id ? results[0].user_id.split(',') : ['0']
             if (userId.includes('0')) {
                 return res.send({
@@ -220,7 +220,7 @@ module.exports.articleDetails = (req, res) => {
 // 添加文章
 module.exports.addArticle = (req, res, data) => {
     let content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
-    content = content.replace(/[\\]+/g, '&#92;') // 内容, 反斜杠转义
+    content = content.replace(/[\\]/g, '&#92;') // 内容, 反斜杠转义
     content = content.replace(/[\n]/g, '&#hh;') // 内容, 换行转义
     const createtime = new Date().getTime() // 获取当前时间戳（精确到毫米
     const classNameId = data.classname, // 类型
@@ -246,7 +246,7 @@ module.exports.addArticle = (req, res, data) => {
 // 修改文章
 module.exports.editArticle = (req, res, data) => {
     let content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
-    content = content.replace(/[\\]+/g, '&#92;') // 内容, 反斜杠转义
+    content = content.replace(/[\\]/g, '&#92;') // 内容, 反斜杠转义
     content = content.replace(/[\n]/g, '&#hh;') // 内容, 换行转义
     const updatetime = new Date().getTime() // 获取当前时间戳（精确到毫米
     const categoryId = data.classname, // 类型
