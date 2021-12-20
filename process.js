@@ -176,8 +176,10 @@ module.exports.articleDetails = (req, res) => {
 
         if(results.length >= 1) {
             results[0].content = results[0].content.replace(/(&apos;)+/g, '\'') // 还原单引号
-            const userId = results[0].user_id ? results[0].user_id.split(',') : [0]
-            if (userId.includes(0)) {
+            results[0].content = results[0].content.replace(/(&#92;)/g, '\\') // 还原反斜杠
+            results[0].content = results[0].content.replace(/(&#hh;)/g, '\n') // 还原反斜杠
+            const userId = results[0].user_id ? results[0].user_id.split(',') : ['0']
+            if (userId.includes('0')) {
                 return res.send({
                     status: 200,
                     data: results[0]
@@ -217,12 +219,14 @@ module.exports.articleDetails = (req, res) => {
 
 // 添加文章
 module.exports.addArticle = (req, res, data) => {
+    let content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
+    content = content.replace(/[\\]/g, '&#92;') // 内容, 反斜杠转义
+    content = content.replace(/[\n]/g, '&#hh;') // 内容, 换行转义
     const createtime = new Date().getTime() // 获取当前时间戳（精确到毫米
     const classNameId = data.classname, // 类型
           title = data.title, // 标题
           original = data.original, // 出自
           synopsis = data.synopsis, // 简介
-          content = data.content.replace(/[']+/g, '&apos;'), // 内容, 单引号转义
           userId = data.userId.join(',') // 用户 ID
 
     const sql = `INSERT INTO article(category_id, title, synopsis, createtime, original, content, user_id) VALUES ('${classNameId}', '${title}', '${synopsis}', '${createtime}', ${original}, '${content}', '${userId}')`
@@ -241,12 +245,14 @@ module.exports.addArticle = (req, res, data) => {
 
 // 修改文章
 module.exports.editArticle = (req, res, data) => {
+    let content = data.content.replace(/[']+/g, '&apos;') // 内容, 单引号转义
+    content = content.replace(/[\\]/g, '&#92;') // 内容, 反斜杠转义
+    content = content.replace(/[\n]/g, '&#hh;') // 内容, 换行转义
     const updatetime = new Date().getTime() // 获取当前时间戳（精确到毫米
     const categoryId = data.classname, // 类型
           title = data.title, // 标题
           original = data.original, // 出自
           synopsis = data.synopsis, // 简介
-          content = data.content.replace(/[']+/g, '&apos;'), // 内容, 单引号转义
           id = req.params.articleId, // id
           userId = data.userId.join(',') // 用户 ID
     const sql = `UPDATE article SET category_id=${categoryId}, title='${title}', synopsis='${synopsis}', original=${original}, content='${content}', updatetime=${updatetime}, user_id='${userId}' WHERE id=${id}`
