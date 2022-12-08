@@ -4,7 +4,7 @@ const mysql = require('mysql')
 const fs = require('fs')
 const exec = require('child_process').exec
 const user = 'root'
-const password = 'yang666'
+const password = 'root'
 
 // 普通连接-start
 // 配置连接参数
