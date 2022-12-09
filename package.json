@@ -5,7 +5,7 @@
     "buffer-equal-constant-time": "^1.0.1",
     "core-util-is": "^1.0.2",
     "ecdsa-sig-formatter": "^1.0.10",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "formidable": "^1.2.1",
     "isarray": "^2.0.4",
     "jsonwebtoken": "^8.4.0",
