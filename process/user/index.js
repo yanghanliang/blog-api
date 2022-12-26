@@ -70,6 +70,7 @@ module.exports.userList = (req, res) => {
 
 // 获取用户权限(前端-不需要传任何参数，从token中获取权限)
 module.exports.userJurisdiction = (req, res) => {
+  console.log('???????--')
     // 密钥
     const secret = 'YANGHANLIANG'
     // 令牌

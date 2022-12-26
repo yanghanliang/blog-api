@@ -24,6 +24,7 @@ router.get('/list', (req, res) => {
 
 // 获取用户权限(前端-不需要传任何参数，从token中获取权限)
 router.get('/jurisdiction', (req, res) => {
+  console.log('userJurisdiction, userJurisdiction')
     process.userJurisdiction(req, res)
 })
 

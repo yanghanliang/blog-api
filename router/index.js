@@ -16,31 +16,30 @@ const components = require('./components/index')
 const echarts = require('./echarts/index.js')
 const bookmark = require('./bookmark/index')
 
-const baseURL = '/api';
 // 创建路由对象
 var router = express.Router()
-router.use(baseURL, comment)                             // 评论
-router.use(baseURL, article)                             // 文章
-router.use(baseURL, category)                            // 分类
-router.use(baseURL, webInfo)                             // 网站数据
-router.use(baseURL, handleFile)                          // 操作文件
-router.use(baseURL + '/user', user)                       // 用户
-router.use(baseURL + '/jurisdiction', jurisdiction)       // 权限
-router.use(baseURL + '/components', components)           // 组件
-router.use(baseURL + '/echarts', echarts)                 // 图表数据
-router.use(baseURL + '/bookmark', bookmark)               // 书签
+router.use(comment)                             // 评论
+router.use(article)                             // 文章
+router.use(category)                            // 分类
+router.use(webInfo)                             // 网站数据
+router.use(handleFile)                          // 操作文件
+router.use('/user', user)                       // 用户
+router.use('/jurisdiction', jurisdiction)       // 权限
+router.use('/components', components)           // 组件
+router.use('/echarts', echarts)                 // 图表数据
+router.use('/bookmark', bookmark)               // 书签
 
 // 调用自定义登录的方法
-router.post(baseURL + '/login', (req, res) => {
+router.post('/login', (req, res) => {
     process.login(req, res, req.body)
 })
 
 // 获取首页需要的数据
-router.get(baseURL + '/index', (req, res) => {
+router.get('/index', (req, res) => {
     process.getIndex(req, res) 
 })
 
-router.get(baseURL + '/testData', (req, res) => {
+router.get('/testData', (req, res) => {
     process.testData(req, res)
 })
 
